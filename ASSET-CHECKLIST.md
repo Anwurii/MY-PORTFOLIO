@@ -138,18 +138,16 @@ To fill them in, send me either of:
 - permission to pull the images down from your Behance galleries, which I
   did not do on my own since they carry your all-rights-reserved notice.
 
-## The email address
+## ~~The email address~~ — resolved
 
-Your message asked for `alabiamazinggrace3@gmail.com` (**two** g's in
-"amazinggrace"). I have **not** used it. Two independent sources say
-otherwise:
+`alabiamazingrace3@gmail.com` (**one** g) is confirmed by the owner, and
+matches both the Behance profile and the design reference footer. The
+double-g spelling in an earlier request was a typo and is not used anywhere.
 
-- your Behance profile: `alabiamazingrace3@gmail.com`
-- the design reference footer: `alabiamazingrace3@gmail.com`
-
-The site uses the single-g address. If the double-g one is genuinely right,
-say so and it is a one-line change in `src/data/site.ts` — but a wrong
-address means mail silently goes nowhere, so I would rather ask.
+It is defined once, in `src/data/site.ts`, and everything else reads from
+there: the nav compose icon, the hero and FAQ "PUT ME TO WORK" buttons,
+"Write me here", the footer chip and its copy button, `public/llms.txt`, and
+the `email` field in the schema.org Person.
 
 ## The footer image
 

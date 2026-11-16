@@ -58,9 +58,12 @@ export const site = {
   },
 
   /**
-   * Contact address, confirmed by the owner. This is the single place it is
-   * defined: the nav compose icon and the PUT ME TO WORK button both build
-   * their `mailto:` from here.
+   * Contact address — confirmed by the owner, and matching both the Behance
+   * profile and the design reference footer. One 'g' in "amazingrace".
+   *
+   * This is the single place it is defined. The nav compose icon, both
+   * "PUT ME TO WORK" buttons, "Write me here", the footer chip and its copy
+   * control, and the schema.org Person all read from here.
    */
   email: 'alabiamazingrace3@gmail.com' as Unconfirmed<string>,
 
