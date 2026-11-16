@@ -1,0 +1,102 @@
+/* ------------------------------------------------------------------ *
+ * Measured at the 1512 design frame:
+ *   heading   x 110.2, lines at y 2441.7 / 2506.1 / 2572.7 (pitch 65.5)
+ *   CTA       x 104,  y 2645.5 → 2697.5
+ *   items     x 436.8, numbers at y 2433 / 2616 / 2764 / 2947 / 3130
+ *   answers   wrap at ≈ 920 wide
+ * ------------------------------------------------------------------ */
+.faq { padding-block: calc(68.6 * var(--u)) calc(60 * var(--u)); }
+
+.faq__grid {
+  display: grid;
+  width: calc(1304 * var(--u));
+  margin-inline: auto;
+  grid-template-columns: calc(333 * var(--u)) minmax(0, 1fr);
+}
+
+.faq__heading {
+  margin: 0;
+  font-size: calc(55 * var(--u));
+  line-height: calc(65.5 * var(--u));
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  color: var(--c-accent);
+}
+.faq__heading-line { display: block; }
+
+.faq__cta { margin-top: calc(21 * var(--u)); }
+
+.faq__list { display: block; }
+
+.faq__item { padding-bottom: calc(24.3 * var(--u)); }
+.faq__item:last-child { padding-bottom: 0; }
+
+/*
+ * Hover / keyboard focus. The answers stay visible throughout — this is not
+ * an accordion. The group shifts 4px right, the question brightens toward
+ * white and the numeral takes the full red.
+ */
+.faq__item { transition: transform 240ms var(--ease-out); }
+.faq__item:hover,
+.faq__item:focus-within { transform: translateX(4px); }
+
+.faq__n { transition: color 240ms var(--ease-out), opacity 240ms var(--ease-out); opacity: 0.85; }
+.faq__item:hover .faq__n,
+.faq__item:focus-within .faq__n { color: var(--c-accent); opacity: 1; }
+
+.faq__q { transition: color 240ms var(--ease-out); }
+.faq__item:hover .faq__q,
+.faq__item:focus-within .faq__q { color: #ffffff; }
+
+.faq__a { transition: color 240ms var(--ease-out); }
+.faq__item:hover .faq__a,
+.faq__item:focus-within .faq__a { color: #cfcdcb; }
+
+@media (prefers-reduced-motion: reduce) {
+  .faq__item, .faq__n, .faq__q, .faq__a { transition: none; }
+  .faq__item:hover, .faq__item:focus-within { transform: none; }
+}
+
+.faq__n {
+  display: block;
+  font-size: calc(17 * var(--u));
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--c-accent-dim);
+}
+
+.faq__q {
+  margin-top: calc(16.4 * var(--u));
+  font-size: calc(30.6 * var(--u));
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-weight: 400;
+  color: #ededed;
+}
+
+.faq__a {
+  margin-top: calc(15.9 * var(--u));
+  max-width: calc(920 * var(--u));
+  font-size: calc(22 * var(--u));
+  line-height: calc(35.4 * var(--u));
+  letter-spacing: -0.05em;
+  color: var(--c-fg-muted);
+}
+
+/* ---- tablet ---- */
+@media (max-width: 1023px) {
+  .faq__grid { width: auto; margin-inline: 32px; grid-template-columns: 240px minmax(0, 1fr); }
+  .faq__heading { font-size: clamp(1.9rem, 4.4vw, 3.4rem); line-height: 1.16; }
+}
+
+/* ---- mobile: stack ---- */
+@media (max-width: 759px) {
+  .faq { padding-block: 56px 64px; }
+  .faq__grid { margin-inline: 20px; grid-template-columns: minmax(0, 1fr); row-gap: 36px; }
+  .faq__heading { font-size: clamp(2rem, 11vw, 3rem); line-height: 1.08; }
+  .faq__cta { margin-top: 20px; }
+  .faq__item { padding-bottom: 32px; }
+  .faq__n { font-size: 12px; }
+  .faq__q { margin-top: 10px; font-size: 18px; }
+  .faq__a { margin-top: 10px; font-size: 15px; line-height: 1.55; letter-spacing: -0.01em; max-width: none; }
+}

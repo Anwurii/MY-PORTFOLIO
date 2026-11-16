@@ -1,0 +1,42 @@
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  /* difference keeps it visible over the light theme and white artwork */
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 160ms linear;
+  will-change: transform;
+}
+.cursor.is-hidden { opacity: 0; }
+
+/*
+ * The native pointer is only hidden once the dot has painted a frame, so a
+ * failure to initialise leaves the normal cursor in place. Text fields and
+ * anything draggable keep their own cursors.
+ */
+.has-custom-cursor,
+.has-custom-cursor a,
+.has-custom-cursor button,
+.has-custom-cursor [role='button'] { cursor: none; }
+
+.has-custom-cursor input,
+.has-custom-cursor textarea,
+.has-custom-cursor select,
+.has-custom-cursor [contenteditable] { cursor: auto; }
+
+@media (hover: none), (pointer: coarse) {
+  .cursor { display: none; }
+  .has-custom-cursor, .has-custom-cursor a, .has-custom-cursor button { cursor: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor { display: none; }
+  .has-custom-cursor, .has-custom-cursor a, .has-custom-cursor button { cursor: auto; }
+}

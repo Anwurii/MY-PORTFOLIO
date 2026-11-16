@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1105" width="1400" height="1105" role="img" aria-label="Placeholder for project artwork">
+  <rect width="1400" height="1105" fill="#1c1c1c"/>
+  <g stroke="#2e2e2e" stroke-width="2" fill="none"><path d="M0 0 1400 1105M1400 0 0 1105"/></g>
+  <rect x="2" y="2" width="1396" height="1101" fill="none" stroke="#3a3a3a" stroke-width="4" stroke-dasharray="18 14"/>
+  <text x="700" y="535" font-family="ui-sans-serif,system-ui,sans-serif" font-size="56" font-weight="700" letter-spacing="4" fill="#8a8a8a" text-anchor="middle">PLACEHOLDER</text>
+  <text x="700" y="600" font-family="ui-sans-serif,system-ui,sans-serif" font-size="34" fill="#6a6a6a" text-anchor="middle">Kariya cover artwork not supplied</text>
+</svg>

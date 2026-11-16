@@ -1,0 +1,56 @@
+/* Measured: ink y 979.6 → 996.2, full bleed. */
+.ticker {
+  position: relative;
+  padding-block: calc(20 * var(--u));
+  overflow: clip;
+}
+
+.ticker__viewport { overflow: hidden; }
+
+/* Two identical runs; -50% lands the second exactly where the first began. */
+.ticker__track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 46s linear infinite;
+  will-change: transform;
+}
+
+.ticker__run { display: flex; flex: 0 0 auto; }
+
+.ticker__item { display: inline-flex; align-items: center; }
+
+.ticker__label {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1.2;
+  color: #4c4c4c;
+  white-space: nowrap;
+}
+
+/* Square separators, 4 × 4, 10px clear of the text on both sides. */
+.ticker__sep {
+  flex: 0 0 auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 0;
+  background: #ffffff;
+  margin-inline: 10px;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Static row — no movement at all. */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track { animation: none; }
+}
+
+@media (max-width: 759px) {
+  .ticker { padding-block: 18px; }
+  .ticker__label { font-size: 14px; letter-spacing: -1px; }
+  .ticker__sep { margin-inline: 8px; }
+}

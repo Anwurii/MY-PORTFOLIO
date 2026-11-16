@@ -1,0 +1,117 @@
+/*
+ * Design tokens.
+ *
+ * Measured from design-reference/hero-reference.png (2000 × 1250).
+ * That export is 2000px wide for a 1512px CSS design frame, so the image
+ * scale is 2000 / 1512 = 1.3228. Every number below is already in CSS px at
+ * that 1512px frame. See ASSET-CHECKLIST.md.
+ */
+:root {
+  /* ---- the design frame ---- */
+  /*
+   * The scalable unit. 1 unit == 1 CSS px at the 1512px design frame, and
+   * shrinks proportionally below it (0.0661376vw == 1512px / 100 / 1512).
+   * Every measured number is written as calc(<number> * var(--u)).
+   */
+  --u: min(1px, 0.0661376vw);
+  /*
+   * The navigation uses its own unit with a floor, so it never grows past
+   * its measured size and never squeezes its links below ~15.5px.
+   */
+  --nu: clamp(0.86px, 0.0661376vw, 1px);
+
+  /* ---- colour (sampled) ---- */
+  --c-bg:            #000000;
+  --c-fg:            #ffffff;
+  --c-fg-muted:      #b9b7b5;   /* eyebrow #b4b2b0 · note #b1afb0 · copy #bdbbb9 */
+  --c-fg-dim:        #8c8c8c;
+  --c-heading-gray:  #999999;
+  --c-accent:        #e6221f;
+  --c-accent-dim:    #b81a18;
+
+  --c-surface:       #1b1b1b;   /* monogram tile, icon group */
+  --c-surface-2:     #2a2a2a;   /* portrait frame backdrop */
+  --c-rule:          rgba(255, 255, 255, 0.55);  /* integrated ≈ 0.57 */
+  --c-hairline:      rgba(255, 255, 255, 0.14);
+  --c-grid-line:     rgba(255, 255, 255, 0.22);
+  --c-outline:       #ffffff;   /* nav border */
+  --c-nav-link:      #aca8a8;   /* About · Projects · Resume */
+  --c-focus:         #ffffff;
+
+  /* ---- type ----
+   * No Helvetica Neue font files were supplied, so this is the local system
+   * stack. Helvetica Neue ships with macOS and iOS; Windows, Linux and
+   * Android fall back to Arial, which is metrically close but not identical.
+   */
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* desktop values, per spec, confirmed against the reference */
+  --fs-hero:    130;            /* × --u */
+  --ls-hero:    -4;
+  --lh-hero:    208;            /* measured baseline pitch */
+
+  --fs-support: 28;
+  /* -1.4px reproduces all four measured paragraph line widths to within 1px
+     at 28px Helvetica Neue. See ASSET-CHECKLIST.md re: the specified "-2". */
+  --ls-support: -1.4;
+  --ls-note:    -0.56;          /* the note measures looser than the body */
+  --lh-support: 40;
+  --lh-note:    35;             /* and is set on a tighter leading */
+  --copy-w:     434;            /* forces the reference's line breaks */
+
+  --fs-btn:     16;
+  --ls-btn:     0.35;           /* reference button text measures 141.5px */
+
+  --fs-nav:     18;
+
+  /* ---- nav geometry (CSS px at the 1512 frame) ---- */
+  --nav-w:      683.4;
+  --nav-h:      76.4;
+  --nav-top:    31;
+  --nav-border: 3;
+  --nav-radius: 20;
+  --nav-inset:  15.9;           /* monogram / icon group inset from the edge */
+  --mono-size:  45;
+  --mono-radius: 14;
+  --icons-w:    80.1;
+  --icons-h:    39.3;
+  --icons-radius: 12;
+
+  /* ---- shape ---- */
+  --r-tile:   10;
+  --r-pill:   999px;
+  --r-btn:    16;
+  --r-frame:  18;
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-base: 420ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 1ms; --dur-base: 1ms; }
+}
+
+/*
+ * Light theme. The reference only shows the dark design, so these values are
+ * a derived counterpart, not a transcription.
+ */
+:root[data-theme='light'] {
+  --c-bg:            #ffffff;
+  --c-fg:            #000000;
+  --c-fg-muted:      #4d4d4d;
+  --c-fg-dim:        #6e6e6e;
+  --c-heading-gray:  #8e8e8e;
+  --c-accent:        #d31b18;
+  --c-accent-dim:    #a81512;
+
+  --c-surface:       #f1f1f1;
+  --c-surface-2:     #e4e4e4;
+  --c-rule:          rgba(0, 0, 0, 0.5);
+  --c-hairline:      rgba(0, 0, 0, 0.16);
+  --c-grid-line:     rgba(0, 0, 0, 0.18);
+  --c-outline:       #000000;
+  --c-nav-link:      #6b6868;   /* derived: #aca8a8 fails contrast on white */
+  --c-focus:         #000000;
+}

@@ -1,0 +1,167 @@
+/* ------------------------------------------------------------------ *
+ * Navigation — fixed pixel geometry measured at the 1512px design
+ * frame. It does NOT grow with the viewport above 1512px; below it,
+ * --hs scales it down, and under 760px it becomes a compact bar.
+ * ------------------------------------------------------------------ */
+
+.nav {
+  position: fixed;
+  top: calc(var(--nav-top) * var(--nu));
+  left: 50%;
+  translate: -50% 0;
+  z-index: 50;
+  width: calc(var(--nav-w) * var(--nu));
+  max-width: calc(100vw - 32px);
+}
+
+.nav__bar {
+  display: flex;
+  align-items: center;
+  height: calc(var(--nav-h) * var(--nu));
+  /* --nav-inset is measured from the pill's OUTER edge */
+  padding-inline: calc((var(--nav-inset) - var(--nav-border)) * var(--nu));
+  border: calc(var(--nav-border) * var(--nu)) solid var(--c-outline);
+  border-radius: calc(var(--nav-radius) * var(--nu));
+  background: color-mix(in srgb, var(--c-bg) 78%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--c-fg);
+}
+
+.nav__monogram {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: calc(var(--mono-size) * var(--nu));
+  height: calc(var(--mono-size) * var(--nu));
+  border-radius: calc(var(--mono-radius) * var(--nu));
+  background: var(--c-surface);
+  font-size: calc(16 * var(--nu));
+  font-weight: 500;
+  letter-spacing: calc(1 * var(--nu));
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.nav__monogram:hover {
+  background: color-mix(in srgb, var(--c-surface) 78%, var(--c-fg));
+}
+
+.nav__links {
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  gap: calc(46 * var(--nu));
+  padding-left: calc(15.6 * var(--nu));  /* lands "About" at its measured x */
+}
+
+.nav__link {
+  display: inline-block;
+  font-size: calc(var(--fs-nav) * var(--nu));
+  line-height: 1.2;
+  color: var(--c-nav-link);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+a.nav__link:hover,
+a.nav__link:focus-visible { color: var(--c-fg); }
+/* Resume has no file yet, so it is not a link — same colour, no hover. */
+.nav__link--off { cursor: default; }
+
+/* ---- right-hand icon group: 80.1 × 39.3 with a hairline divider ---- */
+.nav__icons {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  width: calc(var(--icons-w) * var(--nu));
+  height: calc(var(--icons-h) * var(--nu));
+  border-radius: calc(var(--icons-radius) * var(--nu));
+  background: var(--c-surface);
+  overflow: hidden;
+}
+.nav__icon {
+  display: grid;
+  place-items: center;
+  flex: 1 1 0;
+  height: 100%;
+  color: var(--c-fg);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.nav__icon svg { width: calc(17 * var(--nu)); height: calc(17 * var(--nu)); }
+
+/* The theme control shows one mark per theme, chosen by CSS rather than by
+   React state, so it is correct on the very first paint. */
+.nav__theme-mark { display: none; }
+.nav__theme-mark--sun { display: grid; place-items: center; }
+:root[data-theme='light'] .nav__theme-mark--sun { display: none; }
+:root[data-theme='light'] .nav__theme-mark--moon { display: grid; place-items: center; }
+.nav__icon:hover { background: color-mix(in srgb, var(--c-surface) 72%, var(--c-fg)); }
+.nav__icon--off { opacity: 0.4; }
+.nav__icon-divider {
+  flex: 0 0 auto;
+  width: 1px;
+  height: 100%;
+  background: color-mix(in srgb, var(--c-surface) 55%, var(--c-fg));
+  opacity: 0.35;
+}
+
+/* ---- compact bar ---- */
+.nav__toggle {
+  display: none;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--c-surface);
+  color: var(--c-fg);
+}
+
+.nav__panel {
+  margin-top: 8px;
+  border: 2px solid var(--c-outline);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--c-bg) 96%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 8px;
+}
+.nav__panel-link {
+  display: block;
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 24px;
+}
+.nav__panel-link:hover { background: var(--c-surface); }
+.nav__panel-link--row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+}
+.nav__panel-icon { display: grid; place-items: center; }
+.nav__panel-icon svg { width: 18px; height: 18px; }
+.nav__panel-actions {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--c-hairline);
+}
+
+@media (max-width: 759px) {
+  .nav { width: auto; left: 16px; right: 16px; translate: none; top: 16px; max-width: none; }
+  .nav__bar {
+    height: 60px;
+    border-width: 2px;
+    border-radius: 18px;
+    padding-inline: 10px;
+    justify-content: space-between;
+  }
+  .nav__links, .nav__icons { display: none; }
+  .nav__toggle { display: grid; }
+  .nav__monogram { width: 40px; height: 40px; font-size: 14px; border-radius: 12px; }
+}
+
+@media (min-width: 760px) {
+  .nav__panel { display: none; }
+}

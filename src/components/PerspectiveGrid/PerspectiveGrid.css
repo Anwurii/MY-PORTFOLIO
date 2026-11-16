@@ -1,0 +1,60 @@
+/*
+ * Fine perspective floor grid. Pure CSS: a flat repeating grid rotated on the
+ * X axis so the lines converge on a vanishing point above the plane, masked so
+ * it fades out as it recedes. Decorative only — it sits behind content and
+ * never receives pointer events.
+ */
+.pgrid {
+  position: absolute;
+  inset-inline: 0;
+  pointer-events: none;
+  overflow: hidden;
+  perspective: 170px;
+  perspective-origin: 50% 0%;
+  z-index: 0;
+  contain: paint;
+}
+
+.pgrid__plane {
+  position: absolute;
+  inset: -120% -60% 0;
+  transform: rotateX(74deg);
+  transform-origin: 50% 0%;
+  background-image:
+    repeating-linear-gradient(to right,  var(--c-grid-line) 0 1px, transparent 1px 56px),
+    repeating-linear-gradient(to bottom, var(--c-grid-line) 0 1px, transparent 1px 56px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
+  opacity: 1;
+}
+
+/* Hero / footer: a floor that fades as it recedes upward. */
+.pgrid--floor { bottom: 0; height: clamp(180px, 26vw, 380px); }
+
+/* Quote band: fills the band and fades at both edges. */
+.pgrid--band { inset-block: 0; perspective: 320px; }
+.pgrid--band .pgrid__plane {
+  inset: -160% -60% -40%;
+  transform: rotateX(78deg);
+  opacity: 0.4;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 70%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 70%, transparent 100%);
+}
+
+/*
+ * A very slow drift along the plane's own depth axis. One grid cell per cycle,
+ * so it loops seamlessly and reads as a faint sense of depth rather than
+ * movement competing with the content.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .pgrid__plane { animation: pgrid-drift 24s linear infinite; }
+}
+
+@keyframes pgrid-drift {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 0, 0 56px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pgrid__plane { animation: none; }
+}

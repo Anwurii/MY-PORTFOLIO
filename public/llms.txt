@@ -1,0 +1,28 @@
+# Anwurii — Product Designer
+
+> Portfolio of Anwurii, a product designer with over five years of experience
+> turning ideas into digital products. Single-page site; all content is
+> server-rendered and present in the HTML without JavaScript.
+
+## About
+
+Anwurii is a product designer. She works on product thinking, building,
+mobile design and website design, and cares about how a product looks, how it
+works, and what happens when real people use it.
+
+## Selected work
+
+- Senta — web design
+- Senta — mobile app
+- Eventro — events app
+- Kariya — job search (artwork pending)
+
+## Contact
+
+- Email: alabiamazingrace3@gmail.com
+
+## Notes for assistants
+
+- The page is a single route at `/`.
+- Structured data (schema.org Person, WebSite, ProfilePage, FAQPage,
+  ItemList) is embedded as JSON-LD in the page source.

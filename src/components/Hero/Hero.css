@@ -1,0 +1,302 @@
+/* ------------------------------------------------------------------ *
+ * Hero — explicit layout on the measured 1512 × 960 design frame.
+ * `--x` / `--y` on a block are its measured CSS position at that frame.
+ * `--hs` scales the whole composition below 1512px.
+ * ------------------------------------------------------------------ */
+
+/*
+ * The nav has a scale floor (--nu) while the canvas scales freely (--u), so
+ * below roughly 1300px the nav would overlap the first headline row. This
+ * adds exactly the clearance needed and resolves to 0 at the design width.
+ *   107.4 = nav top (31) + nav height (76.4)
+ *   139.9 = ink top of the first headline row
+ */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-top: max(0px, calc(107.4 * var(--nu) + 24px - 139.9 * var(--u)));
+}
+
+.hero__canvas {
+  position: relative;
+  width: calc(1512 * var(--u));
+  height: calc(960 * var(--u));
+  margin-inline: auto;
+}
+
+/* every positioned block shares this */
+.hero__block,
+.hero__words,
+.hero__portrait,
+.hero__rule {
+  position: absolute;
+  left: calc(var(--x, 0) * var(--u));
+  top: calc(var(--y, 0) * var(--u));
+}
+
+/* ---- hairlines: x-height and baseline of each headline line ---- */
+.hero__rule {
+  left: 50%;
+  translate: -50% 0;
+  width: 100vw;
+  height: 1px;
+  background: var(--c-rule);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---- the six words ---- */
+.hero__words {
+  left: 0;
+  top: calc(78.5 * var(--u));   /* line-box top of the first line */
+  width: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero__word {
+  display: block;
+  margin-left: calc(var(--x) * var(--u));
+  font-size: calc(var(--fs-hero) * var(--u));
+  line-height: calc(var(--lh-hero) * var(--u));
+  letter-spacing: calc(var(--ls-hero) * var(--u));
+  font-weight: 400;
+  color: var(--c-fg);
+  white-space: pre;
+}
+
+/*
+ * The reveal wrapper. `--word-clip` is how far above the line box's bottom
+ * edge the word is clipped: 52 puts the cut ~4px below the baseline, i.e.
+ * just under the baseline hairline, so the word rises out from behind it.
+ * It stays a few px clear of the round letters' overshoot, and none of the
+ * six words has a descender, so nothing is clipped at rest.
+ */
+.hero__ink {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* the measured gap between "and" and "i" on the second line */
+.hero__gap {
+  display: inline-block;
+  width: calc(97 * var(--u));
+}
+
+/* ---- small text ---- */
+.hero__block { z-index: 3; }
+
+.hero__eyebrow p,
+.hero__note p,
+.hero__copy p,
+.hero__tools p {
+  font-size: calc(var(--fs-support) * var(--u));
+  line-height: calc(var(--lh-support) * var(--u));
+  letter-spacing: calc(var(--ls-support) * var(--u));
+  color: var(--c-fg-muted);
+}
+
+/* The eyebrow and the experience note share a tighter setting than the body. */
+.hero__eyebrow p,
+.hero__note p {
+  line-height: calc(var(--lh-note) * var(--u));
+  letter-spacing: calc(var(--ls-note) * var(--u));
+}
+.hero__eyebrow p { white-space: pre-line; }
+.hero__note  p {
+  white-space: pre-line;
+  line-height: calc(var(--lh-note) * var(--u));
+  letter-spacing: calc(var(--ls-note) * var(--u));
+}
+
+.hero__copy { width: calc(var(--copy-w) * var(--u)); }
+
+.hero__tools p { display: flex; align-items: center; gap: calc(12 * var(--u)); }
+
+/* Fanned tool cards: the group measures ≈98 × 38 and ends at x 424. */
+.toolstack { display: inline-flex; align-items: center; padding-right: calc(11.3 * var(--u)); }
+.toolstack__card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(33 * var(--u));
+  height: calc(38 * var(--u));
+  margin-right: calc(-11.3 * var(--u));
+  border-radius: calc(7 * var(--u));
+  background: #121212;
+  border: calc(2.5 * var(--u)) solid #ffffff;
+  rotate: -9deg;
+}
+.toolstack__card:nth-child(2) { rotate: -3deg; }
+.toolstack__card:nth-child(3) { rotate: 3deg; }
+.toolstack__card:nth-child(4) { rotate: 9deg; }
+.toolstack__card svg { width: calc(17 * var(--u)); height: calc(17 * var(--u)); }
+
+/* ---- portrait ---- */
+.hero__portrait { z-index: 4; }
+/*
+ * 10px frame. box-sizing: border-box keeps the outer box at the measured
+ * 546 × 713, and the image is sized in percentages of the content box so the
+ * crop and framing survive the border eating 10px off each edge.
+ */
+.hero__portrait-inner {
+  box-sizing: border-box;
+  width: calc(546 * var(--u));
+  height: calc(713 * var(--u));
+  background: var(--c-surface-2);
+  border: max(6px, calc(10 * var(--u))) solid #1f1e1e;
+  border-radius: calc(var(--r-frame) * var(--u));
+  overflow: hidden;
+}
+/*
+ * The reference does not use a plain `cover` crop: the photo is drawn at
+ * 597.6 × 896.5 (≈9% past cover) and pulled 24.7 to the left, anchored at the
+ * frame top. Fitted by correlating the reference against the supplied file.
+ */
+.hero__portrait-img {
+  width: 109.4505%;           /* 597.6 / 546 of the content box */
+  max-width: none;            /* overrides the global img { max-width: 100% } */
+  height: auto;
+  margin-left: -4.5238%;      /* -24.7 / 546 */
+}
+
+.hero__cta { z-index: 3; }
+.u-btn--off { opacity: 0.45; cursor: default; }
+
+.hero__floor { z-index: 0; }
+
+/* ------------------------------------------------------------------ *
+ * Entrance — plays once on load, transforms and opacity only, so
+ * nothing in the layout moves. Everything lives inside the
+ * no-preference query: with reduced motion requested there is no
+ * animation and no clipping, and the hero renders at its final state.
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* The six words rise out from behind their baseline hairline. */
+  .hero__word {
+    --word-clip: calc(52 * var(--u));
+    clip-path: inset(0 0 var(--word-clip) 0);
+  }
+  .hero__ink {
+    animation: hero-word-rise 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--d, 0ms);
+    will-change: transform;
+  }
+
+  /* Supporting text slides in from its own side of the composition. */
+  .hero__in--left,
+  .hero__in--right {
+    animation-duration: 700ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    animation-fill-mode: both;
+    animation-delay: var(--d, 0ms);
+    will-change: transform, opacity;
+  }
+  .hero__in--left  { animation-name: hero-in-left; }
+  .hero__in--right { animation-name: hero-in-right; }
+
+  .hero__in--fade {
+    animation: hero-fade 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--d, 0ms);
+  }
+
+  /*
+   * On mobile the line box hugs the type (line-height 1.02), so clip at its
+   * bottom edge. The padding/negative-margin pair widens the clip box upward
+   * without moving anything, so a tall glyph can never catch the top edge.
+   */
+  @media (max-width: 759px) {
+    .hero__word {
+      --word-clip: 0px;
+      padding-top: 0.14em;
+      margin-top: -0.14em;
+    }
+  }
+}
+
+@keyframes hero-word-rise {
+  from { transform: translateY(105%); }
+  to   { transform: translateY(0); }
+}
+@keyframes hero-in-left {
+  from { transform: translateX(calc(-40 * var(--u))); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes hero-in-right {
+  from { transform: translateX(calc(40 * var(--u))); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes hero-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ------------------------------------------------------------------ *
+ * Mobile: the canvas is dropped for a stacked flow layout.
+ * ------------------------------------------------------------------ */
+@media (max-width: 759px) {
+  .hero {
+    padding: 124px 20px 56px;
+  }
+  .hero__canvas {
+    position: static;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .hero__block,
+  .hero__words,
+  .hero__portrait {
+    position: static;
+    left: auto;
+    top: auto;
+  }
+  .hero__rule { display: none; }
+
+  /* Drop the two columns so the six words interleave back into the
+     sentence: i'm / anwurii / and i / make / ideas / work. */
+  .hero__words { display: contents; }
+  .hero__words--left  .hero__word:nth-child(1) { order: 2; }
+  .hero__words--right .hero__word:nth-child(1) { order: 3; }
+  .hero__words--left  .hero__word:nth-child(2) { order: 4; }
+  .hero__words--right .hero__word:nth-child(2) { order: 5; }
+  .hero__words--left  .hero__word:nth-child(3) { order: 6; }
+  .hero__words--right .hero__word:nth-child(3) { order: 7; }
+  .hero__word {
+    margin-left: 0;
+    font-size: clamp(2.6rem, 13.5vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+  .hero__gap { width: 0.4em; }
+
+  .hero__eyebrow { order: 1; margin-bottom: 14px; }
+  .hero__note    { order: 8;  margin-top: 18px; }
+  .hero__portrait { order: 9; margin-top: 28px; }
+  .hero__copy--left  { order: 10; margin-top: 28px; }
+  .hero__tools       { order: 11; margin-top: 16px; }
+  .hero__copy--right { order: 12; margin-top: 24px; }
+  .hero__cta         { order: 13; margin-top: 20px; }
+
+  .hero__eyebrow p,
+  .hero__note p,
+  .hero__copy p,
+  .hero__tools p {
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+  .hero__copy { width: auto; }
+
+  .hero__portrait-inner { width: 100%; height: auto; aspect-ratio: 546 / 713; }
+  .hero__portrait-img { width: 109.5%; max-width: none; margin-left: -4.5%; }
+
+  .toolstack__card { width: 26px; height: 30px; margin-right: -9px; border-radius: 6px; border-width: 2px; }
+  .toolstack__card svg { width: 13px; height: 13px; }
+  .toolstack { padding-right: 9px; }
+
+  .u-btn { width: auto; min-width: 180px; height: 48px; padding-inline: 22px; font-size: 14px; }
+}

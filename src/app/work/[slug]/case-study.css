@@ -1,0 +1,127 @@
+/* Case study — same visual language as the homepage, simpler structure. */
+.cs { padding-block: calc(120 * var(--u)) calc(120 * var(--u)); }
+
+.cs__inner {
+  width: calc(1100 * var(--u));
+  max-width: calc(100vw - 2 * var(--gutter, 40px));
+  margin-inline: auto;
+}
+
+.cs__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: calc(21 * var(--u));
+  color: var(--c-nav-link);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.cs__back:hover, .cs__back:focus-visible { color: var(--c-fg); }
+
+.cs__head { margin-top: calc(48 * var(--u)); }
+
+.cs__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 7vw, calc(110 * var(--u)));
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+  color: var(--c-fg);
+}
+
+.cs__subtitle {
+  margin-top: calc(18 * var(--u));
+  font-size: calc(24 * var(--u));
+  letter-spacing: -0.02em;
+  color: var(--c-heading-gray);
+}
+
+.cs__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: calc(34 * var(--u));
+}
+.cs__tag {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--c-surface);
+  font-size: calc(17 * var(--u));
+  color: var(--c-fg-muted);
+}
+
+.cs__cover {
+  margin: calc(56 * var(--u)) 0 0;
+  border-radius: calc(14 * var(--u));
+  overflow: hidden;
+  background: var(--c-surface);
+}
+.cs__cover img { width: 100%; height: auto; }
+.cs__cover.is-placeholder { outline: 1px dashed var(--c-hairline); outline-offset: -1px; }
+.cs__note {
+  padding: 14px 18px;
+  font-size: calc(18 * var(--u));
+  color: var(--c-fg-dim);
+}
+
+.cs__h2 {
+  margin: 0;
+  font-size: calc(34 * var(--u));
+  letter-spacing: -0.02em;
+  font-weight: 400;
+  color: var(--c-fg);
+}
+
+.cs__outbound { margin-top: calc(72 * var(--u)); }
+.cs__body {
+  margin-top: calc(16 * var(--u));
+  max-width: calc(760 * var(--u));
+  font-size: calc(22 * var(--u));
+  line-height: 1.6;
+  letter-spacing: -0.03em;
+  color: var(--c-fg-muted);
+}
+.cs__cta {
+  width: auto;
+  gap: 8px;
+  padding-inline: calc(26 * var(--u));
+  margin-top: calc(26 * var(--u));
+}
+
+.cs__more { margin-top: calc(84 * var(--u)); }
+.cs__more ul {
+  margin-top: calc(18 * var(--u));
+  border-top: 1px solid var(--c-hairline);
+}
+.cs__more li { border-bottom: 1px solid var(--c-hairline); }
+.cs__more-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding-block: 12px;
+  font-size: calc(26 * var(--u));
+  letter-spacing: -0.02em;
+  color: var(--c-fg-muted);
+  transition: color var(--dur-fast) var(--ease-out),
+              padding-left var(--dur-fast) var(--ease-out);
+}
+.cs__more-link:hover, .cs__more-link:focus-visible {
+  color: var(--c-fg);
+  padding-left: 8px;
+}
+
+@media (max-width: 759px) {
+  .cs { padding-block: 110px 64px; }
+  .cs__inner { width: auto; margin-inline: 20px; max-width: none; }
+  .cs__back { font-size: 15px; }
+  .cs__subtitle { font-size: 15px; margin-top: 10px; }
+  .cs__tags { margin-top: 20px; gap: 8px; }
+  .cs__tag { font-size: 12px; padding: 6px 11px; }
+  .cs__cover { margin-top: 28px; }
+  .cs__h2 { font-size: 20px; }
+  .cs__body { font-size: 15px; }
+  .cs__more-link { font-size: 17px; min-height: 56px; }
+  .cs__note { font-size: 13px; }
+}

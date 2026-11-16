@@ -1,0 +1,148 @@
+/* ------------------------------------------------------------------ *
+ * Selected Work — measured at the 1512 design frame:
+ *   container  104 → 1408        tiles 534.5 × 420.5 (ratio 1.271)
+ *   col gap    235               row gap 128.9
+ *   heading    y 1534.9 → 1599.4, centred, between the two rows
+ * ------------------------------------------------------------------ */
+.work {
+  /* row 1 starts at y 1081.5; the ticker band ends just above it */
+  padding-top: calc(59.5 * var(--u));
+}
+
+.work__grid {
+  display: grid;
+  width: calc(1304 * var(--u));
+  margin-inline: auto;
+  grid-template-columns: repeat(2, calc(534.5 * var(--u)));
+  grid-template-rows: auto auto auto;
+  justify-content: space-between;
+  row-gap: calc(21 * var(--u));
+}
+
+.work__tile {
+  position: relative;          /* next/image fill */
+  margin: 0;
+  aspect-ratio: 534.5 / 420.5;
+  overflow: hidden;
+  border-radius: calc(10 * var(--u));
+  background: var(--c-surface);
+}
+.work__tile--1 { grid-area: 1 / 1; }
+.work__tile--2 { grid-area: 1 / 2; }
+.work__tile--3 { grid-area: 3 / 1; }
+.work__tile--4 { grid-area: 3 / 2; }
+
+/* The heading occupies the band between the two rows. */
+.work__title {
+  grid-area: 2 / 1 / 3 / 3;
+  justify-self: center;
+  align-self: center;
+  font-size: calc(86.5 * var(--u));
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  color: var(--c-heading-gray);
+  text-align: center;
+}
+
+/*
+ * Opens from the centre outward with a slight scale. The element keeps its
+ * size throughout — only clip-path and transform change — so the rows above
+ * and below never move.
+ */
+.work__title-inner { display: inline-block; will-change: clip-path, transform; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .work__title-inner {
+    clip-path: inset(0 50% 0 50%);
+    transform: scale(0.96);
+    transition: clip-path 800ms var(--ease-out), transform 800ms var(--ease-out);
+  }
+  .work__title-inner.is-in {
+    clip-path: inset(0 -2% 0 -2%);
+    transform: scale(1);
+  }
+}
+
+.work__link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.work__img {
+  object-fit: cover;
+  object-position: center;
+  transition: transform 620ms var(--ease-out);
+}
+
+.work__tile.is-placeholder { outline: 1px dashed var(--c-hairline); outline-offset: -1px; }
+
+/* ---- name over artwork ---- */
+.work__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0) 52%);
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out);
+  pointer-events: none;
+}
+.work__name {
+  position: absolute;
+  left: calc(28 * var(--u));
+  bottom: calc(22 * var(--u));
+  z-index: 1;
+  font-size: calc(30 * var(--u));
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
+  pointer-events: none;
+}
+
+.work__link:hover .work__img,
+.work__link:focus-visible .work__img { transform: scale(1.03); }
+.work__link:hover .work__veil,
+.work__link:focus-visible .work__veil { opacity: 1; }
+.work__link:hover .work__name,
+.work__link:focus-visible .work__name { opacity: 1; transform: translateY(0); }
+
+/* Touch and other hoverless pointers: keep the name on screen. */
+@media (hover: none) {
+  .work__veil { opacity: 1; }
+  .work__name { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work__img, .work__veil, .work__name { transition: none; }
+  .work__link:hover .work__img { transform: none; }
+}
+
+/* ---- tablet ---- */
+@media (max-width: 1023px) {
+  .work__grid { width: auto; margin-inline: var(--gutter-m, 32px); column-gap: 24px;
+                grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: stretch; }
+  .work__title { font-size: clamp(2.4rem, 7vw, 4.5rem); }
+}
+
+/* ---- mobile: one column, heading first ---- */
+@media (max-width: 759px) {
+  .work { padding-top: 40px; padding-bottom: 48px; }
+  .work__grid {
+    margin-inline: 20px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    row-gap: 16px;
+  }
+  .work__tile--1, .work__tile--2, .work__tile--3, .work__tile--4 { grid-area: auto; }
+  .work__title {
+    grid-area: auto;
+    order: -1;
+    justify-self: start;
+    text-align: left;
+    padding-block: 0 8px;
+    font-size: clamp(2rem, 11vw, 3rem);
+  }
+}
