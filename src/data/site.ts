@@ -47,11 +47,8 @@ export interface ExperienceEntry {
   id: string
   company: string
   /**
-   * Full-time · Part-time · Contract · Freelance.
-   *
-   * Null for every entry: no resume has been supplied and the design
-   * reference records a job ROLE, not an employment type, so there is
-   * nothing to read this from. See ASSET-CHECKLIST.md.
+   * Full-time · Part-time · Contract · Freelance. Supplied by the owner:
+   * the design reference records a job ROLE instead, and no resume exists.
    */
   employment: Unconfirmed<string>
   /** Years only, no months — derived from the timelines in the reference. */
@@ -243,8 +240,8 @@ export const site = {
    * reference (design-reference/experience-section.png). Months are dropped
    * to years, as asked; nothing is paraphrased and nothing is added.
    *
-   * `employment` is null throughout — that field is in neither the
-   * reference nor any supplied resume.
+   * The employment types were supplied separately by the owner — they are
+   * in neither the reference nor any resume.
    */
   experience: {
     label: 'Selected experience',
@@ -255,7 +252,7 @@ export const site = {
       {
         id: 'senta',
         company: 'Senta Finance',
-        employment: null,
+        employment: 'Full-time',
         years: '2025–Present',
         summary:
           'Redesigned multi-market onboarding and KYC to improve clarity and trust.',
@@ -264,7 +261,7 @@ export const site = {
       {
         id: 'jobtech',
         company: 'Jobtech Alliance',
-        employment: null,
+        employment: 'Contract',
         years: '2025–2026',
         summary:
           'Led the visual redesign of Jobtech Alliance’s public website, translating the organization’s mission.',
@@ -273,7 +270,7 @@ export const site = {
       {
         id: 'kariiya',
         company: 'Kariiya',
-        employment: null,
+        employment: 'Contract',
         years: '2025',
         summary:
           'Designed the zero-to-one UX for an AI job-search agent, defining the core interaction model and prototypes.',
@@ -282,7 +279,7 @@ export const site = {
       {
         id: 'ask-gavyn',
         company: 'Ask Gavyn AI',
-        employment: null,
+        employment: 'Part-time',
         years: '2025',
         summary:
           'Turned complex legal research into clear and conversational workflows.',
@@ -291,7 +288,7 @@ export const site = {
       {
         id: 'nexumi',
         company: 'Nexumi',
-        employment: null,
+        employment: 'Contract',
         years: '2024–2025',
         summary:
           'Unified multi-channel messaging through research and design systems.',

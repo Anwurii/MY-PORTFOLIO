@@ -59,19 +59,25 @@ export function Experience() {
  * Filling the field in is all that is needed to turn it on.
  */
 function Company({ entry }: { entry: (typeof experience.entries)[number] }) {
-  const label = entry.employment ? (
-    <>
+  /*
+   * Only the company name is the link. The employment type sits outside it,
+   * so the case study's accessible name stays "Senta Finance" rather than
+   * "Senta Finance · Full-time", and the hover underline tracks the name.
+   */
+  const name = entry.caseStudySlug ? (
+    <Link className="exp__link" href={`/work/${entry.caseStudySlug}`}>
       {entry.company}
-      <span className="exp__employment"> · {entry.employment}</span>
-    </>
+    </Link>
   ) : (
     entry.company
   )
 
-  if (!entry.caseStudySlug) return <>{label}</>
   return (
-    <Link className="exp__link" href={`/work/${entry.caseStudySlug}`}>
-      {label}
-    </Link>
+    <>
+      {name}
+      {entry.employment ? (
+        <span className="exp__employment"> · {entry.employment}</span>
+      ) : null}
+    </>
   )
 }
