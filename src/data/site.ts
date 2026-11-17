@@ -43,24 +43,23 @@ export interface Project {
   placeholder?: boolean
 }
 
-export interface ExperienceRow {
+export interface ExperienceEntry {
   id: string
   company: string
-  role: string
-  timeline: string
-  contribution: string
-  /** Existing internal case study this row previews, or null when none exists. */
-  caseStudySlug: Unconfirmed<string>
-  /** Preview artwork. Reused from Selected Work — nothing new is invented. */
-  previewImage: Unconfirmed<string>
-  previewAlt: string
-  /** true when `previewImage` is a stand-in, not the real artwork */
-  previewIsPlaceholder?: boolean
   /**
-   * Left edge of the desktop hover preview, measured from that row's own
-   * hover reference and expressed as a fraction of the table width.
+   * Full-time · Part-time · Contract · Freelance.
+   *
+   * Null for every entry: no resume has been supplied and the design
+   * reference records a job ROLE, not an employment type, so there is
+   * nothing to read this from. See ASSET-CHECKLIST.md.
    */
-  previewLeft: string
+  employment: Unconfirmed<string>
+  /** Years only, no months — derived from the timelines in the reference. */
+  years: string
+  /** One plain sentence, transcribed from the supplied design reference. */
+  summary: string
+  /** Internal case study, only where a working route exists. */
+  caseStudySlug: Unconfirmed<string>
 }
 
 export interface ProcessStage {
@@ -237,46 +236,68 @@ export const site = {
    * artwork below are the same ones `work.projects` uses, so no route or
    * image here is new.
    */
+  /*
+   * Selected experience.
+   *
+   * Every company, sentence and date comes from the supplied design
+   * reference (design-reference/experience-section.png). Months are dropped
+   * to years, as asked; nothing is paraphrased and nothing is added.
+   *
+   * `employment` is null throughout — that field is in neither the
+   * reference nor any supplied resume.
+   */
   experience: {
     label: 'Selected experience',
-    resumeLabel: 'View full resume here',
-    /** Two lines, as the reference sets it. */
-    heading: ['A TRACK RECORD', 'OF EXPERIENCE'],
-    columns: ['COMPANY', 'ROLE', 'TIMELINE', 'CONTRIBUTION'],
-    /** Shown beside the preview where there is no hover (touch). */
-    previewCta: 'View case study',
-    rows: [
+    stat: '5+',
+    statSub:
+      'years in product design transitioned from marketing to product design.',
+    entries: [
       {
         id: 'senta',
         company: 'Senta Finance',
-        role: 'Senior Product Designer',
-        timeline: 'May 2025 - Present',
-        contribution:
+        employment: null,
+        years: '2025–Present',
+        summary:
           'Redesigned multi-market onboarding and KYC to improve clarity and trust.',
         caseStudySlug: 'senta-app',
-        previewImage: '/images/work/senta-app.jpg',
-        previewAlt: 'Senta — a hand holding a phone showing a balance screen on a purple backdrop',
-        previewLeft: '62.5%',
+      },
+      {
+        id: 'jobtech',
+        company: 'Jobtech Alliance',
+        employment: null,
+        years: '2025–2026',
+        summary:
+          'Led the visual redesign of Jobtech Alliance’s public website, translating the organization’s mission.',
+        caseStudySlug: null,
       },
       {
         id: 'kariiya',
-        /* "Kariiya" is the spelling used by the project itself, by the
-           Behance gallery and by the experience reference. */
         company: 'Kariiya',
-        role: 'Product Designer',
-        timeline: 'Oct 2025',
-        contribution:
+        employment: null,
+        years: '2025',
+        summary:
           'Designed the zero-to-one UX for an AI job-search agent, defining the core interaction model and prototypes.',
         caseStudySlug: 'kariiya',
-        /* The real Kariiya artwork has still not been supplied, so this is
-           the same stand-in the Selected Work tile uses. See
-           ASSET-CHECKLIST.md. */
-        previewImage: '/images/work/kariya-placeholder.svg',
-        previewAlt: 'Placeholder — Kariiya artwork has not been supplied yet',
-        previewIsPlaceholder: true,
-        previewLeft: '68.85%',
       },
-    ] satisfies ExperienceRow[],
+      {
+        id: 'ask-gavyn',
+        company: 'Ask Gavyn AI',
+        employment: null,
+        years: '2025',
+        summary:
+          'Turned complex legal research into clear and conversational workflows.',
+        caseStudySlug: null,
+      },
+      {
+        id: 'nexumi',
+        company: 'Nexumi',
+        employment: null,
+        years: '2024–2025',
+        summary:
+          'Unified multi-channel messaging through research and design systems.',
+        caseStudySlug: null,
+      },
+    ] satisfies ExperienceEntry[],
   },
 
   /*

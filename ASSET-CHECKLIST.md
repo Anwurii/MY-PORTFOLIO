@@ -16,6 +16,7 @@ Status after the navigation + hero correction pass.
 | # | What | Needed for | Current state |
 |---|------|-----------|---------------|
 | 1 | **Resume PDF** | Nav → Resume, and "View full resume here" in Selected experience | No file; `public/resume/` is empty. Both render with their normal wording but nothing to click, plus "(file not supplied yet)" for screen readers. Drop a PDF in `public/resume/` and set `resumeUrl` in `src/data/site.ts` — both become real links, nothing else changes. |
+| 1b | **Employment types** | Selected experience | Not supplied. The design reference records a job ROLE (Senior Product Designer, UI/UX Designer…), not an employment type, and no resume has been supplied, so Full-time / Part-time / Contract / Freelance is unknown for all five entries. Each renders the company name alone; set `employment` on the entry in `src/data/site.ts` to turn it on. |
 | 2 | **Helvetica Neue web fonts** | Everything | None supplied — see "Typeface" below. |
 | 3 | **Icon exports** | The two nav icons | None supplied. Both are hand-drawn SVG traced from the reference (`src/components/Nav/NavIcons.tsx`). Close, but not your originals. |
 | 4 | **Kariiya project cover** | Selected Work bottom-right tile, and the Kariiya hover preview in Selected experience | `kariya-placeholder.svg` at 1400 × 1105, labelled in the artwork and marked with a dashed outline. The experience reference shows the real orange Kariiya mockup in that preview; it has still not been supplied, so the stand-in is used there too and carries a screen-reader note. |
