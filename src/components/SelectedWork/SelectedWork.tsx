@@ -39,7 +39,7 @@ export function SelectedWork() {
         </div>
 
         <ol className="work__list">
-          {work.projects.map((p) => (
+          {work.projects.map((p, i) => (
             <Reveal as="li" className="work__item" key={p.id}>
               <Link
                 className={`work__link${p.placeholder ? ' is-placeholder' : ''}`}
@@ -54,6 +54,10 @@ export function SelectedWork() {
                     src={p.image}
                     alt={p.alt}
                     fill
+                    /* the first tile is the page's LCP once the statement
+                       sits below this section — Next warns about it
+                       otherwise */
+                    priority={i === 0}
                     style={{ objectPosition: p.objectPosition }}
                     sizes="(max-width: 759px) 92vw, (max-width: 1023px) 94vw, 808px"
                   />

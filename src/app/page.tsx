@@ -21,8 +21,8 @@ export default function HomePage() {
       <main id="main">
         <Hero />
         <Ticker />
-        <Statement />
         <SelectedWork />
+        <Statement />
         <Experience />
         <HowIWork />
         <Faq />

@@ -1,10 +1,13 @@
 /* ------------------------------------------------------------------ *
- * The statement before Selected Work.
+ * The statement between Selected Work and Selected experience.
  *
- * Ground, dot pitch, pill shape and drift are measured from the reference
- * section: #111113, a 21.6px dot grid, pills at 18px/500 with 14/22 padding
- * and 40px radii bar one square corner, each drifting no more than six
- * pixels over 6s + 1.3s × index, infinite alternate ease-in-out.
+ * Ground, dot pitch, pill shape and drift distance are measured from the
+ * reference: #111113 under a 21.6px dot grid, pills with 40px radii bar one
+ * square corner, each floating no more than a few pixels.
+ *
+ * The headline size and the rotating frame's width are both solved in the
+ * component from the real rendered font and written here as --head-size and
+ * --rot-width; the fallbacks below only cover the first paint.
  * ------------------------------------------------------------------ */
 .statement {
   position: relative;
@@ -13,10 +16,9 @@
   min-height: 100svh;
   display: grid;
   place-items: center;
-  padding: calc(80 * var(--u)) calc(60 * var(--u));
+  padding: calc(90 * var(--u)) calc(60 * var(--u));
   overflow: hidden;
   background-color: #111113;
-  /* the dot grid, drawn rather than fetched */
   background-image: radial-gradient(
     circle at center,
     rgba(255, 255, 255, 0.085) 1.1px,
@@ -34,6 +36,24 @@
   );
 }
 
+/*
+ * The stage is exactly the headline box, and it is what the labels are
+ * positioned against — which is what keeps them tucked against the type
+ * instead of drifting out to the section edges.
+ */
+.statement__stage {
+  position: relative;
+  /*
+   * Content-sized, not full width: the stage has to BE the headline box,
+   * because the labels are positioned as percentages of it. Stretch it and
+   * those percentages silently become percentages of the section instead,
+   * which throws the labels out to the edges.
+   */
+  display: block;
+  width: max-content;
+  max-width: 100%;
+}
+
 /* ---- the three lines ----------------------------------------------- */
 
 .statement__text {
@@ -41,12 +61,13 @@
   z-index: 2;
   margin: 0;
   text-align: center;
-  font-size: calc(52 * var(--u));
-  line-height: 1.16;
-  letter-spacing: calc(-3 * var(--u));
+  font-size: var(--head-size, 7.2vw);
+  line-height: 1.02;
+  letter-spacing: -0.055em;
   font-weight: 700;
   color: var(--c-fg);
   pointer-events: none;      /* the labels own the pointer, not the type */
+  white-space: nowrap;
 }
 
 .statement__line { display: block; }
@@ -54,64 +75,55 @@
 /* ---- the rotating word --------------------------------------------- */
 
 /*
- * The frame is sized by a hidden copy of the longest alternate, so the
- * line keeps one width whatever word is showing and nothing reflows. It
- * clips, so each word arrives from under the baseline and leaves over the
- * cap line.
+ * The frame is as wide as the widest alternate at the live size, so the
+ * line never changes width and no word is ever cut.
+ *
+ * It clips vertically only: `inset(0 -0.6em)` trims at the top and bottom
+ * edges while leaving half an em of room either side, so a settled word's
+ * side bearings and any overshoot are never shaved.
  */
 .statement__rot {
   position: relative;
   display: inline-block;
-  overflow: hidden;
-  vertical-align: bottom;
-  /* room for ascenders and descenders inside the clip */
-  padding-block: 0.08em;
-  margin-block: -0.08em;
-}
-
-.statement__sizer {
-  display: block;
-  visibility: hidden;
+  vertical-align: top;
+  width: var(--rot-width, 6em);
+  height: 1.02em;
+  clip-path: inset(0 -0.6em);
 }
 
 /*
- * Only the word arriving and the word leaving are ever rendered. The
- * others are hidden outright rather than merely parked outside the clip,
- * so a transition that stalls — a throttled tab, a dropped frame — can
- * never leave a third word sitting in the frame.
+ * Only the word arriving and the word leaving are rendered. The others are
+ * hidden outright rather than merely parked outside the clip, so a stalled
+ * transition can never leave a third word in the frame.
  */
 .statement__word {
   position: absolute;
   left: 50%;
-  top: 0.08em;
-  transform: translate(-50%, 110%);
-  white-space: nowrap;
+  top: 0;
+  transform: translate(-50%, 115%);
   visibility: hidden;
+  white-space: nowrap;
 }
 .statement__word.is-on {
   transform: translate(-50%, 0);
   visibility: visible;
 }
 .statement__word.is-out {
-  transform: translate(-50%, -110%);
+  transform: translate(-50%, -115%);
   visibility: visible;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .statement__word {
-    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
+  .statement__word { transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1); }
 }
 
-/*
- * Reduced motion: the first word only, standing still. It is the one the
- * accessible sentence names, so the two always agree.
- */
+/* Reduced motion: the first word only, standing still. */
 @media (prefers-reduced-motion: reduce) {
   .statement__word { display: none; }
   .statement__word:first-of-type {
     display: block;
     transform: translate(-50%, 0);
+    visibility: visible;
   }
 }
 
@@ -120,29 +132,48 @@
 .statement__labels {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   pointer-events: none;
 }
 
+/* position only — every transform lives on a wrapper inside */
 .statement__label {
   position: absolute;
   left: var(--x);
   top: var(--y);
-  /* --px/--py are the pointer lean, written by the component */
-  translate: var(--px, 0) var(--py, 0);
-  transition: translate 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* entrance */
+.statement__enter {
+  display: block;
+  opacity: 0;
+  transform: translateY(14px);
+}
+.statement.is-ready .statement__enter {
+  opacity: 1;
+  transform: none;
+}
+
+/* float — its own wrapper, so it never overwrites the entrance */
+.statement__float { display: block; }
+
+/* pointer lean — its own wrapper again; the component writes the transform */
+.statement__lean {
+  display: block;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .statement__pill {
   position: relative;
   display: block;
-  padding: calc(14 * var(--u)) calc(22 * var(--u));
+  padding: calc(13 * var(--u)) calc(22 * var(--u));
   border-radius: calc(40 * var(--u));
-  font-size: calc(18 * var(--u));
+  font-size: calc(17 * var(--u));
   line-height: 1.15;
   letter-spacing: -0.01em;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 /* one square corner each, as the reference cuts them */
@@ -154,77 +185,95 @@
 .is-green  .statement__pill { background: #5adba5; color: #000000; }
 .is-purple .statement__pill { background: #7f00fd; color: #ffffff; }
 .is-orange .statement__pill { background: #fd7a00; color: #000000; }
-.is-yellow .statement__pill { background: #fdcf00; color: #000000; }
 
+/* the pointer hangs off whichever corner its label is cut on */
 .statement__arrow {
   position: absolute;
-  left: calc(-13 * var(--u));
-  bottom: calc(-16 * var(--u));
   width: calc(26 * var(--u));
-  height: calc(26 * var(--u));
-  color: currentColor;
+  height: calc(29 * var(--u));
 }
+.is-arrow-bl .statement__arrow { left: calc(-9 * var(--u));  bottom: calc(-18 * var(--u)); }
+.is-arrow-tl .statement__arrow { left: calc(-9 * var(--u));  top: calc(-18 * var(--u)); transform: scaleY(-1); }
+.is-arrow-tr .statement__arrow { right: calc(-9 * var(--u)); top: calc(-18 * var(--u)); transform: scale(-1); }
+
 .is-cyan   .statement__arrow { color: #00e4fd; }
 .is-green  .statement__arrow { color: #5adba5; }
 .is-purple .statement__arrow { color: #7f00fd; }
 .is-orange .statement__arrow { color: #fd7a00; }
-.is-yellow .statement__arrow { color: #fdcf00; }
 
-/* ---- drift ---------------------------------------------------------- */
+/* ---- motion --------------------------------------------------------- */
 
 @media (prefers-reduced-motion: no-preference) {
-  .statement__pill {
-    animation: statement-drift 6s ease-in-out infinite alternate;
+  /* the headline arrives with a short lift */
+  .statement__text {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .statement__label:nth-child(2) .statement__pill { animation-duration: 7.3s; }
-  .statement__label:nth-child(3) .statement__pill { animation-duration: 8.6s; }
-  .statement__label:nth-child(4) .statement__pill { animation-duration: 9.9s; }
-  .statement__label:nth-child(5) .statement__pill { animation-duration: 11.2s; }
+  .statement.is-ready .statement__text { opacity: 1; transform: none; }
 
-  /* nothing animates while the section is off screen */
-  .statement.is-paused .statement__pill { animation-play-state: paused; }
+  /* labels follow it, staggered */
+  .statement__enter {
+    transition:
+      opacity 460ms cubic-bezier(0.22, 1, 0.36, 1) calc(220ms + var(--i) * 90ms),
+      transform 560ms cubic-bezier(0.22, 1, 0.36, 1) calc(220ms + var(--i) * 90ms);
+  }
+
+  .statement__float {
+    animation: statement-float 6s ease-in-out infinite alternate;
+  }
+  .statement__label:nth-child(2) .statement__float { animation-duration: 7.3s; }
+  .statement__label:nth-child(3) .statement__float { animation-duration: 8.6s; }
+  .statement__label:nth-child(4) .statement__float { animation-duration: 9.9s; }
+
+  /* nothing runs while the section is off screen */
+  .statement.is-paused .statement__float { animation-play-state: paused; }
 }
 
-@keyframes statement-drift {
-  0%   { translate: 0 0; }
-  30%  { translate: 6px -4px; }
-  60%  { translate: -3px 5px; }
-  100% { translate: 4px 2px; }
+@keyframes statement-float {
+  0%   { transform: translate(0, 0); }
+  30%  { transform: translate(6px, -5px); }
+  60%  { transform: translate(-4px, 6px); }
+  100% { transform: translate(5px, 3px); }
 }
 
 /* ---- tablet --------------------------------------------------------- */
 
 @media (max-width: 1023px) {
   .statement {
-    padding: 72px 24px;
+    padding: 80px 24px;
     background-size: 18px 18px;
   }
-  .statement__text { font-size: 40px; letter-spacing: -2px; }
-  .statement__pill { font-size: 14px; padding: 10px 16px; border-radius: 30px; }
-  .statement__arrow { width: 20px; height: 20px; left: -10px; bottom: -12px; }
+  .statement__pill { font-size: 13px; padding: 9px 15px; border-radius: 30px; }
+  .statement__arrow { width: 20px; height: 22px; }
+  .is-arrow-bl .statement__arrow { left: -7px; bottom: -13px; }
+  .is-arrow-tl .statement__arrow { left: -7px; top: -13px; }
+  .is-arrow-tr .statement__arrow { right: -7px; top: -13px; }
 }
 
-/* ---- phone: labels move clear of the type --------------------------- */
+/* ---- phone: the labels move clear of the type ----------------------- */
 
 @media (max-width: 759px) {
   .statement {
-    min-height: 92vh;
-    min-height: 92svh;
-    padding: 56px 20px;
+    min-height: 96vh;
+    min-height: 96svh;
+    padding: 64px 18px;
     background-size: 15px 15px;
   }
-  .statement__text { font-size: 27px; letter-spacing: -1.2px; }
-
-  .statement__pill { font-size: 11px; padding: 7px 12px; border-radius: 22px; }
-  .statement__arrow { width: 15px; height: 15px; left: -7px; bottom: -9px; }
+  .statement__pill { font-size: 10.5px; padding: 6px 11px; border-radius: 22px; }
+  .statement__arrow { width: 15px; height: 17px; }
+  .is-arrow-bl .statement__arrow { left: -5px; bottom: -10px; }
+  .is-arrow-tl .statement__arrow { left: -5px; top: -10px; }
+  .is-arrow-tr .statement__arrow { right: -5px; top: -10px; }
 
   /*
-   * Re-placed for a narrow column: two above the type, two below, one at
-   * the foot, none of them crossing the headline or the edges.
+   * Pulled out to the corners of the headline box so four labels and three
+   * lines of type can share a narrow column without touching.
    */
-  .statement__label:nth-child(1) { left: 4%;  top: 11%; }
-  .statement__label:nth-child(2) { left: 56%; top: 20%; }
-  .statement__label:nth-child(3) { left: 3%;  top: 72%; }
-  .statement__label:nth-child(4) { left: 52%; top: 80%; }
-  .statement__label:nth-child(5) { left: 8%;  top: 89%; }
+  .statement__label:nth-child(1) { left: 0%;   top: -44%; }
+  .statement__label:nth-child(2) { left: 40%;  top: -16%; }
+  .statement__label:nth-child(3) { left: -2%;  top: 108%; }
+  .statement__label:nth-child(4) { left: 44%;  top: 126%; }
 }
