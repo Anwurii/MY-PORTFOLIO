@@ -1,6 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react'
 import type { CSSProperties } from 'react'
 import Image from 'next/image'
 import { site } from '../../data/site'
@@ -48,6 +55,30 @@ const FLICKER: Cut[] = Array.from({ length: FLICKER_COUNT }, (_, i) => ({
   ms: FLICKER_MS,
   invert: i % 3 === 2,
 }))
+
+/* ---------------------------------------------------------------------- *
+ * Type scale.
+ *
+ * The reference sets every word to the width of the viewport, which is why
+ * NEED and PORSCHE both reach edge to edge and why the measured ink height
+ * runs from 0.371 to 0.769 of the viewport depending on how many letters
+ * the word has. Two of them — FOR and MY — come up against a ceiling at
+ * 0.769, so there is a height cap as well as a width target.
+ *
+ * So each word needs its own size, derived from how wide it is per em.
+ * These are Helvetica Neue Bold at -0.02em; they are only the first-paint
+ * fallback, because the real widths are measured on mount — Windows and
+ * Android fall back to Arial, whose metrics differ enough to leave a gap at
+ * the edge if these numbers were trusted everywhere.
+ */
+const EM_WIDTH: Record<string, number> = {
+  NEED: 2.609,
+  MONEY: 3.601,
+  FOR: 1.946,
+  MY: 1.494,
+  PORSCHE: 4.72,
+}
+const FALLBACK_EM = 2.6
 
 const CUTS = [...OPENING, ...FLICKER]
 const RUN_MS = CUTS.reduce((t, c) => t + c.ms, 0)
@@ -144,6 +175,7 @@ function IntroSequence({ onFinish }: { onFinish: () => void }) {
   const [cut, setCut] = useState(0)
   const [phase, setPhase] = useState<'run' | 'squeeze' | 'open'>('run')
   const [failed, setFailed] = useState<Set<number>>(() => new Set())
+  const stageRef = useRef<HTMLDivElement>(null)
   const skipRef = useRef<HTMLButtonElement>(null)
   const timers = useRef<number[]>([])
   const done = useRef(false)
@@ -158,6 +190,32 @@ function IntroSequence({ onFinish }: { onFinish: () => void }) {
     document.documentElement.classList.remove(INTRO_CLASS)
     timers.current.push(window.setTimeout(onFinish, OPEN_MS))
   }, [onFinish])
+
+  /*
+   * Measure the real widths before the first word is painted, so the type
+   * fills the viewport whichever face the system actually resolved.
+   */
+  useLayoutEffect(() => {
+    const nodes = stageRef.current?.querySelectorAll<HTMLElement>('.intro__word')
+    if (!nodes) return
+    try {
+      const ctx = document.createElement('canvas').getContext('2d')
+      if (!ctx) return
+      const probe = 200
+      const face = getComputedStyle(document.documentElement).getPropertyValue('--font-sans')
+      ctx.font = `700 ${probe}px ${face || 'Helvetica Neue, Helvetica, Arial, sans-serif'}`
+      ctx.letterSpacing = `${-0.02 * probe}px`
+      nodes.forEach((node, i) => {
+        const m = ctx.measureText(WORDS[i])
+        const width = m.actualBoundingBoxLeft + m.actualBoundingBoxRight
+        // written straight to the node: this is a measurement, not state,
+        // and nothing about the sequence depends on re-rendering for it
+        if (width > 0) node.style.setProperty('--em', String(width / probe))
+      })
+    } catch {
+      /* the fallback widths rendered inline are already in place */
+    }
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.add(INTRO_CLASS)
@@ -208,7 +266,7 @@ function IntroSequence({ onFinish }: { onFinish: () => void }) {
       {/* the accessible version of the whole sequence, read once */}
       <p className="u-sr-only">{intro.headline}</p>
 
-      <div className="intro__stage" aria-hidden="true">
+      <div className="intro__stage" ref={stageRef} aria-hidden="true">
         {SHOTS.map((s, i) => (
           <div
             key={s.src}
@@ -226,7 +284,11 @@ function IntroSequence({ onFinish }: { onFinish: () => void }) {
         ))}
 
         {WORDS.map((w, i) => (
-          <p key={w} className={`intro__word${current.word === i ? ' is-on' : ''}`}>
+          <p
+            key={w}
+            className={`intro__word${current.word === i ? ' is-on' : ''}`}
+            style={{ '--em': EM_WIDTH[w] ?? FALLBACK_EM } as CSSProperties}
+          >
             {w}
           </p>
         ))}

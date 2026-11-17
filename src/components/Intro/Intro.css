@@ -101,16 +101,23 @@
   object-position: center;
 }
 
+/*
+ * Every word is set to the width of the viewport, as the reference does it,
+ * so the size falls out of how many letters the word has: --em is the word's
+ * own width in ems, measured on mount. The 105vh ceiling is the cap the
+ * reference runs into on its shortest words — FOR and MY both stop at an ink
+ * height of 0.769 of the viewport rather than growing any further.
+ */
 .intro__word {
   position: relative;
   z-index: 1;
   margin: 0;
-  padding-inline: 20px;
+  white-space: nowrap;
   text-align: center;
   font-family: var(--font-sans);
-  font-size: 100px;
+  font-size: min(calc(96vw / var(--em, 2.6)), 105vh);
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: -0.02em;
   font-weight: 700;
   color: #ffffff;
 }
@@ -147,11 +154,11 @@
 
 /* ---- smaller screens ----------------------------------------------- */
 
-@media (max-width: 1023px) {
-  .intro__word { font-size: 64px; letter-spacing: -1.4px; }
-}
+/*
+ * No type overrides here: sizing from the viewport width already carries the
+ * words down to phone size, which is the whole point of doing it this way.
+ */
 @media (max-width: 759px) {
-  .intro__word { font-size: 40px; letter-spacing: -1px; }
   .intro__skip { right: 14px; bottom: 14px; }
 }
 
