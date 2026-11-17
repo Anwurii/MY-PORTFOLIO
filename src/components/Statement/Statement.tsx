@@ -42,36 +42,36 @@ export function Statement() {
     const head = headRef.current
     if (!section || !head) return
 
+    /*
+     * The headline size is a fixed value in the stylesheet now, so the only
+     * thing left to solve is the rotating frame — and it is solved from the
+     * size and tracking the headline actually ended up with, read back off
+     * the element rather than assumed, so it stays right at every
+     * breakpoint and after the real face resolves.
+     */
     const measure = () => {
       const styles = getComputedStyle(head)
-      const face = styles.fontFamily
-      const tracking = -0.055 // em, matches the stylesheet
+      const size = parseFloat(styles.fontSize)
+      const tracking = parseFloat(styles.letterSpacing) || 0
+      if (!size) return
 
       const ctx = document.createElement('canvas').getContext('2d')
       if (!ctx) return
-      const probe = 200
-      ctx.font = `700 ${probe}px ${face}`
-      ctx.letterSpacing = `${tracking * probe}px`
+      ctx.font = `${styles.fontWeight} ${size}px ${styles.fontFamily}`
+      ctx.letterSpacing = `${tracking}px`
 
-      const emWidth = (text: string) => {
+      const inkWidth = (text: string) => {
         const m = ctx.measureText(text)
-        return (m.actualBoundingBoxLeft + m.actualBoundingBoxRight) / probe
+        return m.actualBoundingBoxLeft + m.actualBoundingBoxRight
       }
 
       /*
-       * The longest line is sized to ~78% of the section, which is where
-       * the reference sits — wide enough to dominate, with room left for
-       * the labels tucked either side of it.
+       * The widest alternate sets the frame. Canvas metrics and the DOM's
+       * own layout disagree by a pixel or two, so round up and add a hair
+       * of slack rather than leave the widest word fractionally over.
        */
-      const padding = 2 * parseFloat(getComputedStyle(section).paddingLeft)
-      const target = Math.min(section.clientWidth * 0.78, section.clientWidth - padding)
-      const longest = statement.lines.reduce((a, b) => (emWidth(b) > emWidth(a) ? b : a))
-      const size = target / emWidth(longest)
-      section.style.setProperty('--head-size', `${size.toFixed(2)}px`)
-
-      // the frame takes the widest alternate at that size, plus side room
-      const widest = ROTATING.reduce((a, b) => (emWidth(b) > emWidth(a) ? b : a))
-      section.style.setProperty('--rot-width', `${(emWidth(widest) * size).toFixed(2)}px`)
+      const widest = ROTATING.reduce((a, b) => (inkWidth(b) > inkWidth(a) ? b : a))
+      section.style.setProperty('--rot-width', `${Math.ceil(inkWidth(widest)) + 3}px`)
     }
 
     measure()

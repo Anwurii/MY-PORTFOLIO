@@ -5,9 +5,10 @@
  * reference: #111113 under a 21.6px dot grid, pills with 40px radii bar one
  * square corner, each floating no more than a few pixels.
  *
- * The headline size and the rotating frame's width are both solved in the
- * component from the real rendered font and written here as --head-size and
- * --rot-width; the fallbacks below only cover the first paint.
+ * The headline is a fixed 84px/-3 at the 1512 frame, stepping down at the
+ * two breakpoints. The rotating frame's width is solved in the component
+ * from whichever size and tracking the headline actually ended up with, and
+ * written here as --rot-width; the fallback only covers the first paint.
  * ------------------------------------------------------------------ */
 .statement {
   position: relative;
@@ -61,9 +62,9 @@
   z-index: 2;
   margin: 0;
   text-align: center;
-  font-size: var(--head-size, 7.2vw);
-  line-height: 1.02;
-  letter-spacing: -0.055em;
+  font-size: calc(84 * var(--u));
+  line-height: 1.06;
+  letter-spacing: calc(-3 * var(--u));
   font-weight: 700;
   color: var(--c-fg);
   pointer-events: none;      /* the labels own the pointer, not the type */
@@ -87,7 +88,7 @@
   display: inline-block;
   vertical-align: top;
   width: var(--rot-width, 6em);
-  height: 1.02em;
+  height: 1.06em;
   clip-path: inset(0 -0.6em);
 }
 
@@ -246,6 +247,8 @@
     padding: 80px 24px;
     background-size: 18px 18px;
   }
+  /* the fixed 84px is a desktop value; below that it steps down */
+  .statement__text { font-size: 56px; letter-spacing: -2px; }
   .statement__pill { font-size: 13px; padding: 9px 15px; border-radius: 30px; }
   .statement__arrow { width: 20px; height: 22px; }
   .is-arrow-bl .statement__arrow { left: -7px; bottom: -13px; }
@@ -262,6 +265,7 @@
     padding: 64px 18px;
     background-size: 15px 15px;
   }
+  .statement__text { font-size: 34px; letter-spacing: -1.2px; }
   .statement__pill { font-size: 10.5px; padding: 6px 11px; border-radius: 22px; }
   .statement__arrow { width: 15px; height: 17px; }
   .is-arrow-bl .statement__arrow { left: -5px; bottom: -10px; }
