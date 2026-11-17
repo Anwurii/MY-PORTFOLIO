@@ -338,9 +338,12 @@ export const site = {
     ] satisfies ProcessStage[],
   },
 
-  quote: {
-    text: '“DESIGN IS HOW IT WORKS.”',
-    attribution: '~ Steve Jobs',
+  /*
+   * The statement that lands before Selected Work. Supplied verbatim; the
+   * component splits it on spaces for the scroll-linked fill.
+   */
+  statement: {
+    text: 'I DESIGN & BUILD PRODUCTS THAT WORK.',
   },
 
   faq: {
