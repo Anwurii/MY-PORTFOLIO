@@ -1,0 +1,80 @@
+/* Scroll is locked only while the intro is on screen; finish() removes this. */
+.intro-locked body { overflow: hidden; }
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: grid;
+  place-items: center;
+  background: #000000;
+  /* the wipe out */
+  transition: opacity var(--exit-ms, 340ms) cubic-bezier(0.4, 0, 0.2, 1),
+              clip-path var(--exit-ms, 340ms) cubic-bezier(0.4, 0, 0.2, 1);
+  clip-path: inset(0 0 0 0);
+}
+.intro.is-leaving {
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+}
+
+/* The beats stack in one grid cell so nothing shifts between words. */
+.intro__word {
+  display: grid;
+  margin: 0;
+  place-items: center;
+  text-align: center;
+  padding-inline: 20px;
+}
+/*
+ * The beats share one grid cell so nothing shifts between words. The word
+ * leaving has no transition, so it clears the instant the next one starts —
+ * cross-fading them overlaps two centred words into an unreadable jumble.
+ */
+.intro__beat {
+  grid-area: 1 / 1;
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 7vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+  color: #6f6f6f;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition: none;
+}
+.intro__beat.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 220ms ease-out, transform 220ms ease-out;
+}
+.intro__beat--name { color: #ffffff; }
+
+.intro__skip {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: transparent;
+  color: #aca8a8;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  transition: color 160ms ease-out, border-color 160ms ease-out;
+}
+.intro__skip:hover,
+.intro__skip:focus-visible { color: #ffffff; border-color: rgba(255, 255, 255, 0.7); }
+
+/*
+ * Belt and braces: if the page is restored from bfcache or the component is
+ * ever torn down mid-flight, nothing here can leave the document hidden.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+  .intro-locked body { overflow: visible; }
+}

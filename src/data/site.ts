@@ -33,6 +33,26 @@ export interface Project {
   placeholder?: boolean
 }
 
+export interface ExperienceRow {
+  id: string
+  company: string
+  role: string
+  timeline: string
+  contribution: string
+  /** Existing internal case study this row previews, or null when none exists. */
+  caseStudySlug: Unconfirmed<string>
+  /** Preview artwork. Reused from Selected Work — nothing new is invented. */
+  previewImage: Unconfirmed<string>
+  previewAlt: string
+  /** true when `previewImage` is a stand-in, not the real artwork */
+  previewIsPlaceholder?: boolean
+  /**
+   * Left edge of the desktop hover preview, measured from that row's own
+   * hover reference and expressed as a fraction of the table width.
+   */
+  previewLeft: string
+}
+
 export interface FaqItem {
   n: string
   q: string
@@ -148,6 +168,59 @@ export const site = {
         placeholder: true,
       },
     ] satisfies Project[],
+  },
+
+  /*
+   * Selected experience.
+   *
+   * Transcribed from the supplied experience reference (default + two hover
+   * states). Dates are the ones given with that design and deliberately
+   * override anything earlier. Only the two confirmed rows are listed.
+   *
+   * Each row previews an existing Selected Work case study; the slugs and
+   * artwork below are the same ones `work.projects` uses, so no route or
+   * image here is new.
+   */
+  experience: {
+    label: 'Selected experience',
+    resumeLabel: 'View full resume here',
+    /** Two lines, as the reference sets it. */
+    heading: ['A TRACK RECORD', 'OF EXPERIENCE'],
+    columns: ['COMPANY', 'ROLE', 'TIMELINE', 'CONTRIBUTION'],
+    /** Shown beside the preview where there is no hover (touch). */
+    previewCta: 'View case study',
+    rows: [
+      {
+        id: 'senta',
+        company: 'Senta Finance',
+        role: 'Senior Product Designer',
+        timeline: 'May 2025 - Present',
+        contribution:
+          'Redesigned multi-market onboarding and KYC to improve clarity and trust.',
+        caseStudySlug: 'senta-app',
+        previewImage: '/images/work/senta-app.jpg',
+        previewAlt: 'Senta — a hand holding a phone showing a balance screen on a purple backdrop',
+        previewLeft: '62.5%',
+      },
+      {
+        id: 'kariiya',
+        /* "Kariiya" is the spelling used by the project itself, by the
+           Behance gallery and by the experience reference. */
+        company: 'Kariiya',
+        role: 'Product Designer',
+        timeline: 'Oct 2025',
+        contribution:
+          'Designed the zero-to-one UX for an AI job-search agent, defining the core interaction model and prototypes.',
+        caseStudySlug: 'kariiya',
+        /* The real Kariiya artwork has still not been supplied, so this is
+           the same stand-in the Selected Work tile uses. See
+           ASSET-CHECKLIST.md. */
+        previewImage: '/images/work/kariya-placeholder.svg',
+        previewAlt: 'Placeholder — Kariiya artwork has not been supplied yet',
+        previewIsPlaceholder: true,
+        previewLeft: '68.85%',
+      },
+    ] satisfies ExperienceRow[],
   },
 
   quote: {

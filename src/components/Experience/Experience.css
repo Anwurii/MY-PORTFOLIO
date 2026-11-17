@@ -1,0 +1,279 @@
+/* ------------------------------------------------------------------ *
+ * Selected experience.
+ *
+ * All numbers are CSS px at the 1512 design frame, measured from the
+ * experience reference (2000px wide → image px / 1.32275). See the header
+ * comment in Experience.tsx for the measurement table.
+ * ------------------------------------------------------------------ */
+.exp {
+  position: relative;
+  border-top: 1px solid var(--c-rule);
+  padding-top: calc(15.4 * var(--u));
+  padding-bottom: calc(100 * var(--u));
+}
+
+/* ---- heading block ---------------------------------------------- */
+
+/*
+ * The heading starts at x 916 of the 1512 frame (60.6%) and both of its
+ * lines share that left edge, so this is a two-column split, not a
+ * right-aligned block.
+ */
+.exp__head {
+  display: grid;
+  /* the heading's left edge sits at x 916 of the frame, i.e. 848 past the inset */
+  grid-template-columns: calc(848 * var(--u)) 1fr;
+  align-items: start;
+  padding-inline: calc(68 * var(--u));
+  padding-bottom: calc(19.3 * var(--u));
+}
+
+.exp__label,
+.exp__resume {
+  font-size: calc(30 * var(--u));
+  line-height: 1.5;
+  letter-spacing: -0.05em;
+  margin: 0;
+}
+
+.exp__label { color: var(--c-nav-link); }
+
+.exp__resume {
+  display: inline-block;
+  color: var(--c-fg);
+  text-decoration: underline;
+  text-underline-offset: calc(4 * var(--u));
+  text-decoration-thickness: 1px;
+}
+a.exp__resume:hover { color: var(--c-nav-link); }
+a.exp__resume:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+/* No file yet — same colour and underline, but nothing to click. */
+.exp__resume.is-unavailable { cursor: default; }
+
+.exp__title {
+  /* the heading's cap line sits above the label's — see the reference */
+  margin: calc(-20.8 * var(--u)) 0 0;
+  /*
+   * Specified size. The reference measures ≈61px at the 1512 frame, so this
+   * one number is the knob if it wants to be bigger.
+   */
+  font-size: calc(52 * var(--u));
+  line-height: 1.1;
+  letter-spacing: calc(-4 * var(--u));
+  font-weight: 700;
+  color: var(--c-heading-gray);
+}
+.exp__title-line { display: block; }
+
+/* ---- table ------------------------------------------------------- */
+
+/*
+ * Rules are full-bleed; only the content is inset. The dividers are drawn
+ * as borders on the cells so they run the full height of every row,
+ * including the header, exactly as the reference has them.
+ */
+.exp__table {
+  border-block: 1px solid var(--c-rule);
+}
+
+.exp__row {
+  display: grid;
+  grid-template-columns: 21.75% 23.5% 22.75% 32%;
+  position: relative;          /* positioning context for the preview */
+}
+
+.exp__row + .exp__row,
+.exp__rowgroup + .exp__rowgroup .exp__row:first-child {
+  border-top: 1px solid var(--c-rule);
+}
+
+.exp__cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;   /* cells share the last baseline */
+  padding-inline: calc(15 * var(--u));
+  font-size: calc(26 * var(--u));
+  line-height: 1.18;
+  letter-spacing: -0.05em;
+  color: var(--c-fg);
+  font-weight: 700;
+}
+.exp__cell + .exp__cell { border-left: 1px solid var(--c-rule); }
+.exp__cell:first-child { padding-left: calc(68 * var(--u)); }
+.exp__cell:last-child  { padding-right: calc(68 * var(--u)); }
+
+/* The contribution column is the only one set in the regular weight. */
+.exp__cell--contrib { font-weight: 400; }
+
+/*
+ * Per-cell column labels. `display: none` keeps them out of the accessibility
+ * tree on desktop, where the real column headers do that job; at phone width
+ * the header row is gone and these become the labels, announced as part of
+ * the cell. That is why they are not aria-hidden.
+ */
+.exp__k { display: none; }
+
+.exp__row--head .exp__cell {
+  min-height: calc(56.7 * var(--u));
+  justify-content: center;
+  color: var(--c-heading-gray);
+  font-weight: 400;
+}
+
+.exp__rowgroup:last-child .exp__row {
+  min-height: calc(137.6 * var(--u));
+  padding-bottom: calc(18 * var(--u));
+  padding-top: calc(28 * var(--u));
+}
+
+/* ---- hover / focus preview --------------------------------------- */
+
+/*
+ * 189 × 189 at the 1512 frame, vertically centred on its row, with the left
+ * edge taken from that row's own hover reference (--preview-left).
+ *
+ * Kept in flow terms "visible" — opacity only — so it stays in the tab
+ * order. It is a child of the row, so the pointer can travel from the row
+ * onto the image without the row losing :hover, and it never changes the
+ * row's height.
+ */
+.exp__preview {
+  position: absolute;
+  top: 50%;
+  left: var(--preview-left, 62.5%);
+  width: calc(189 * var(--u));
+  transform: translateY(-50%) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  text-decoration: none;
+  color: var(--c-fg);
+}
+
+.exp__preview-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--c-surface);
+}
+.exp__preview-img { object-fit: cover; }
+
+/* Only needed where there is no hover — see the touch block below. */
+.exp__preview-cta { display: none; }
+
+.exp__row:hover .exp__preview,
+.exp__row:focus-within .exp__preview {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
+}
+
+.exp__preview:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .exp__preview {
+    transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* appears and disappears, but does not travel or scale */
+  .exp__preview { transform: translateY(-50%); }
+  .exp__row:hover .exp__preview,
+  .exp__row:focus-within .exp__preview { transform: translateY(-50%); }
+}
+
+/* ---- tablet ------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+  .exp__head { grid-template-columns: 1fr; row-gap: 24px; padding-bottom: 40px; }
+  .exp__title { margin-top: 0; }
+  .exp__label, .exp__resume { font-size: 20px; }
+  .exp__title { font-size: 40px; letter-spacing: -0.07em; }
+  .exp__cell { font-size: 17px; }
+  .exp__cell:first-child { padding-left: 24px; }
+  .exp__cell:last-child { padding-right: 24px; }
+  .exp__head { padding-inline: 24px; }
+  .exp__preview { width: 150px; }
+}
+
+/* ---- phone: every row becomes a labelled block ------------------- */
+
+@media (max-width: 759px) {
+  .exp { padding-bottom: 56px; }
+  .exp__head { padding-bottom: 32px; }
+  .exp__title { font-size: 34px; }
+
+  /* the column header row has nothing to head once the grid is gone */
+  .exp__table .exp__row--head { display: none; }
+
+  .exp__row {
+    display: block;
+    padding: 24px;
+  }
+  .exp__rowgroup:last-child .exp__row {
+    min-height: 0;
+    padding: 24px;
+  }
+  .exp__row + .exp__row { border-top: 1px solid var(--c-rule); }
+
+  .exp__cell {
+    display: block;
+    padding: 0;
+    font-size: 18px;
+  }
+  .exp__cell + .exp__cell {
+    border-left: 0;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--c-hairline);
+  }
+  .exp__cell:first-child, .exp__cell:last-child { padding-inline: 0; }
+
+  .exp__k {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--c-heading-gray);
+    margin-bottom: 4px;
+  }
+
+  .exp__cell--company .exp__v { font-size: 22px; }
+}
+
+/* ---- no hover (touch): inline preview with a visible link --------- */
+
+@media (hover: none), (max-width: 759px) {
+  .exp__preview {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: auto;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    margin-top: 16px;
+  }
+  .exp__row:hover .exp__preview,
+  .exp__row:focus-within .exp__preview { transform: none; }
+  .exp__preview-media { width: 72px; flex: 0 0 72px; }
+  .exp__preview-cta {
+    display: block;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+}

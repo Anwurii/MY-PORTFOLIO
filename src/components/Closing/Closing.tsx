@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { site } from '../../data/site'
 import { Figma, GitHub, OpenAI, Claude } from '../Brand/BrandMarks'
+import { PerspectiveGrid } from '../PerspectiveGrid/PerspectiveGrid'
 import { Reveal } from '../Reveal/Reveal'
 import { FooterHeadline } from './FooterHeadline'
 import './Closing.css'
@@ -29,6 +30,9 @@ const stickers = [
 export function Closing() {
   return (
     <section className="closing" aria-labelledby="closing-title">
+      {/* Wide grid narrowing toward the lower centre, behind the headline. */}
+      <PerspectiveGrid variant="ceiling" vanishY={1.05} className="closing__grid" />
+
       <h2 id="closing-title" className="closing__title">
         <FooterHeadline lines={site.closing.heading} />
       </h2>

@@ -11,7 +11,7 @@ import './Quote.css'
 export function Quote() {
   return (
     <section className="quote" aria-label="Quote">
-      <PerspectiveGrid variant="band" className="quote__grid" />
+      <PerspectiveGrid variant="ceiling" vanishY={1.45} className="quote__grid" />
       <Reveal as="figure" className="quote__inner">
         <blockquote className="quote__text">{site.quote.text}</blockquote>
         <figcaption className="quote__by">{site.quote.attribution}</figcaption>

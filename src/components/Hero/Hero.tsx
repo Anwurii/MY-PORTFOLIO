@@ -52,7 +52,7 @@ export function Hero() {
           <span key={y} className="hero__rule" style={at(undefined, y)} aria-hidden="true" />
         ))}
 
-        <PerspectiveGrid variant="floor" className="hero__floor" />
+        <PerspectiveGrid variant="floor" vanishY={-0.28} className="hero__floor pgrid--band-bottom" />
 
         {/* ---------- left column: eyebrow + three words ---------- */}
         <div className="hero__block hero__eyebrow hero__in--left" style={at(14.3, 160.6, 120)}>

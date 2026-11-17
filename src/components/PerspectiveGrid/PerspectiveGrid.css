@@ -1,60 +1,65 @@
 /*
- * Fine perspective floor grid. Pure CSS: a flat repeating grid rotated on the
- * X axis so the lines converge on a vanishing point above the plane, masked so
- * it fades out as it recedes. Decorative only — it sits behind content and
- * never receives pointer events.
+ * Decorative grid layer. It sits above the section's background and below its
+ * content, so sections that use it set `position: relative` and give their
+ * content a higher stacking level. It never intercepts the pointer.
  */
 .pgrid {
   position: absolute;
-  inset-inline: 0;
-  pointer-events: none;
-  overflow: hidden;
-  perspective: 170px;
-  perspective-origin: 50% 0%;
+  inset: 0;
   z-index: 0;
-  contain: paint;
-}
-
-.pgrid__plane {
-  position: absolute;
-  inset: -120% -60% 0;
-  transform: rotateX(74deg);
-  transform-origin: 50% 0%;
-  background-image:
-    repeating-linear-gradient(to right,  var(--c-grid-line) 0 1px, transparent 1px 56px),
-    repeating-linear-gradient(to bottom, var(--c-grid-line) 0 1px, transparent 1px 56px);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 28%, #000 100%);
-  opacity: 1;
-}
-
-/* Hero / footer: a floor that fades as it recedes upward. */
-.pgrid--floor { bottom: 0; height: clamp(180px, 26vw, 380px); }
-
-/* Quote band: fills the band and fades at both edges. */
-.pgrid--band { inset-block: 0; perspective: 320px; }
-.pgrid--band .pgrid__plane {
-  inset: -160% -60% -40%;
-  transform: rotateX(78deg);
-  opacity: 0.4;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 70%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 35%, #000 70%, transparent 100%);
+  overflow: hidden;
+  pointer-events: none;
 }
 
 /*
- * A very slow drift along the plane's own depth axis. One grid cell per cycle,
- * so it loops seamlessly and reads as a faint sense of depth rather than
- * movement competing with the content.
+ * The hero uses the floor grid as a band along its lower edge, and much
+ * fainter than the footer's — in the hero reference it is barely there,
+ * sitting under the supporting copy rather than behind open space.
  */
-@media (prefers-reduced-motion: no-preference) {
-  .pgrid__plane { animation: pgrid-drift 24s linear infinite; }
+.pgrid--band-bottom {
+  top: auto;
+  height: clamp(180px, 26vw, 380px);
+  opacity: 0.45;
 }
 
-@keyframes pgrid-drift {
-  from { background-position: 0 0, 0 0; }
-  to   { background-position: 0 0, 0 56px; }
+.pgrid__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .pgrid__plane { animation: none; }
+/*
+ * Thin, low-contrast strokes. vector-effect keeps them one physical pixel
+ * however far the viewBox is stretched, which is what keeps the grid fine
+ * rather than smeared at wide viewports.
+ *
+ * The colour itself comes from the `-ink` gradient on the <g> (#CED2DF →
+ * #FFFFFF), so no `stroke` is declared here — a declaration would win over
+ * the attribute. Brightness is carried by the ink layer's opacity instead,
+ * which is what keeps the lines a background detail. The mask still fades
+ * them into black toward the vanishing point.
+ */
+.pgrid__lines {
+  opacity: var(--pgrid-ink-o, 0.22);
+}
+
+.pgrid__lines line {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (max-width: 759px) {
+  /* half the density, and a touch softer, so it stays a background */
+  .pgrid__lines .pgrid__alt { display: none; }
+  .pgrid { --pgrid-ink-o: 0.17; }
+}
+
+/*
+ * Light theme. A white-to-silver gradient is invisible on white, so the
+ * light theme keeps its flat dark stroke and full ink opacity.
+ */
+:root[data-theme='light'] .pgrid__lines { opacity: 1; }
+:root[data-theme='light'] .pgrid__lines line { stroke: var(--c-grid-line); }
+@media (max-width: 759px) {
+  :root[data-theme='light'] .pgrid__lines line { stroke: var(--c-grid-line-mobile); }
 }

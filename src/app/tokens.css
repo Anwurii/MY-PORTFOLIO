@@ -33,7 +33,8 @@
   --c-surface-2:     #2a2a2a;   /* portrait frame backdrop */
   --c-rule:          rgba(255, 255, 255, 0.55);  /* integrated ≈ 0.57 */
   --c-hairline:      rgba(255, 255, 255, 0.14);
-  --c-grid-line:     rgba(255, 255, 255, 0.22);
+  --c-grid-line:        rgba(255, 255, 255, 0.22);
+  --c-grid-line-mobile: rgba(255, 255, 255, 0.15);
   --c-outline:       #ffffff;   /* nav border */
   --c-nav-link:      #aca8a8;   /* About · Projects · Resume */
   --c-focus:         #ffffff;
@@ -110,7 +111,8 @@
   --c-surface-2:     #e4e4e4;
   --c-rule:          rgba(0, 0, 0, 0.5);
   --c-hairline:      rgba(0, 0, 0, 0.16);
-  --c-grid-line:     rgba(0, 0, 0, 0.18);
+  --c-grid-line:        rgba(0, 0, 0, 0.18);
+  --c-grid-line-mobile: rgba(0, 0, 0, 0.12);
   --c-outline:       #000000;
   --c-nav-link:      #6b6868;   /* derived: #aca8a8 fails contrast on white */
   --c-focus:         #000000;

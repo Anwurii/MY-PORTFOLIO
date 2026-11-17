@@ -6,6 +6,7 @@
 }
 
 .quote__grid { z-index: 0; }
+.quote__inner { position: relative; z-index: 1; }
 
 .quote__inner {
   position: relative;

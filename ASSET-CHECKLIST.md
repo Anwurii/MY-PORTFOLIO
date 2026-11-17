@@ -15,10 +15,10 @@ Status after the navigation + hero correction pass.
 
 | # | What | Needed for | Current state |
 |---|------|-----------|---------------|
-| 1 | **Resume PDF** | Nav → Resume | No file. The Resume item renders dimmed and non-interactive, with "(file not supplied yet)" for screen readers. Drop a PDF in `public/resume/` and set `resumeUrl` in `src/data/site.ts`. |
+| 1 | **Resume PDF** | Nav → Resume, and "View full resume here" in Selected experience | No file; `public/resume/` is empty. Both render with their normal wording but nothing to click, plus "(file not supplied yet)" for screen readers. Drop a PDF in `public/resume/` and set `resumeUrl` in `src/data/site.ts` — both become real links, nothing else changes. |
 | 2 | **Helvetica Neue web fonts** | Everything | None supplied — see "Typeface" below. |
 | 3 | **Icon exports** | The two nav icons | None supplied. Both are hand-drawn SVG traced from the reference (`src/components/Nav/NavIcons.tsx`). Close, but not your originals. |
-| 4 | **Kariya project cover** | Selected Work, bottom-right tile | `kariya-placeholder.svg` at 1400 × 1105, labelled in the artwork and marked with a dashed outline |
+| 4 | **Kariiya project cover** | Selected Work bottom-right tile, and the Kariiya hover preview in Selected experience | `kariya-placeholder.svg` at 1400 × 1105, labelled in the artwork and marked with a dashed outline. The experience reference shows the real orange Kariiya mockup in that preview; it has still not been supplied, so the stand-in is used there too and carries a screen-reader note. |
 | 5 | **Project destinations** | Selected Work | None. All four tiles render as non-interactive `<figure>`s rather than links that go nowhere. The hover and focus styles are already written against `a.work__link`, so they start working the moment `href` values land in `src/data/site.ts`. |
 | 6 | **Social destinations** | Footer | None. LinkedIn, Twitter, GitHub and Behance render as dimmed, non-interactive marks, each with a screen-reader note that the link is not supplied. |
 

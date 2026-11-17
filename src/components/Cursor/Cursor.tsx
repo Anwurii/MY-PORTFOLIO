@@ -3,26 +3,29 @@
 import { useEffect, useRef, useState } from 'react'
 import './Cursor.css'
 
-/** Interactive things the cursor should react to. */
 const INTERACTIVE = 'a[href], button, [role="button"], summary, label[for]'
-/** Where a text caret matters more than a decorative dot. */
 const TEXT_ENTRY = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]'
 
 /**
- * Small white dot that follows the pointer with a spring, and swells a little
- * over links and buttons.
+ * Small white dot that follows the pointer.
  *
- * It never runs unless the device actually suits it: a fine pointer that can
- * hover, and no reduced-motion preference. The native cursor is only hidden
- * once this has mounted and painted a frame, so a failure here can never
- * leave a visitor with no pointer at all. Over text fields the dot hides and
- * the real caret comes back.
+ * Position is written straight from the pointer coordinates — no easing, no
+ * trailing — so the dot sits exactly under the pointer. The only thing that
+ * animates is a quick scale when the pointer is over something interactive.
+ *
+ * It writes `transform` directly on the node from one rAF loop, so pointer
+ * movement never triggers a React render, and the loop only does work on
+ * frames where something actually changed. There is no CSS transition on
+ * `transform`; a transition there is what made the old version feel heavy.
+ *
+ * Only runs for a fine, hovering pointer with no reduced-motion preference,
+ * and the native cursor is hidden only after the first frame is painted, so
+ * a failure here can never leave a visitor with no pointer at all.
  */
 export function Cursor() {
   const [enabled, setEnabled] = useState(false)
   const dotRef = useRef<HTMLDivElement>(null)
 
-  // Only enable for fine, hovering pointers without a motion preference.
   useEffect(() => {
     const queries = [
       window.matchMedia('(hover: hover)'),
@@ -39,56 +42,56 @@ export function Cursor() {
     const dot = dotRef.current
     if (!enabled || !dot) return
 
-    let targetX = window.innerWidth / 2
-    let targetY = window.innerHeight / 2
-    let x = targetX
-    let y = targetY
+    let x = 0
+    let y = 0
     let scale = 1
     let targetScale = 1
-    let frame = 0
+    let dirty = false
     let painted = false
+    let frame = 0
 
-    const onMove = (e: PointerEvent) => {
-      targetX = e.clientX
-      targetY = e.clientY
-      if (!painted) return
-      const el = e.target as Element | null
-      const overText = !!el?.closest?.(TEXT_ENTRY)
-      dot.classList.toggle('is-hidden', overText)
-      targetScale = !overText && el?.closest?.(INTERACTIVE) ? 1.9 : 1
-    }
-
-    const onLeave = () => dot.classList.add('is-hidden')
-    const onEnter = () => dot.classList.remove('is-hidden')
-    const onDown = () => { targetScale *= 0.8 }
-    const onUp = () => { targetScale = targetScale < 1 ? 1 : targetScale }
-
-    // Critically damped-ish follow: position eases, scale springs a little.
-    const tick = () => {
-      x += (targetX - x) * 0.18
-      y += (targetY - y) * 0.18
-      scale += (targetScale - scale) * 0.2
-      // translate(-50%, -50%) keeps the dot's centre on the pointer
+    const render = () => {
+      frame = requestAnimationFrame(render)
+      // scale is the only eased value, and it settles fast
+      const nextScale = scale + (targetScale - scale) * 0.3
+      const scaleChanged = Math.abs(nextScale - scale) > 0.001
+      if (!dirty && !scaleChanged) return
+      scale = scaleChanged ? nextScale : targetScale
+      dirty = false
+      // position is written verbatim — the dot is exactly under the pointer
       dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${scale})`
       if (!painted) {
         painted = true
+        dot.classList.remove('is-hidden')
         document.documentElement.classList.add('has-custom-cursor')
       }
-      frame = requestAnimationFrame(tick)
     }
 
-    frame = requestAnimationFrame(tick)
+    const onMove = (e: PointerEvent) => {
+      x = e.clientX
+      y = e.clientY
+      dirty = true
+      const el = e.target as Element | null
+      if (el?.closest?.(TEXT_ENTRY)) {
+        dot.classList.add('is-over-text')
+        targetScale = 1
+      } else {
+        dot.classList.remove('is-over-text')
+        targetScale = el?.closest?.(INTERACTIVE) ? 1.8 : 1
+      }
+    }
+
+    const onLeave = () => dot.classList.add('is-hidden')
+    const onEnter = () => { if (painted) dot.classList.remove('is-hidden') }
+
+    frame = requestAnimationFrame(render)
     window.addEventListener('pointermove', onMove, { passive: true })
-    window.addEventListener('pointerdown', onDown, { passive: true })
-    window.addEventListener('pointerup', onUp, { passive: true })
     document.addEventListener('pointerleave', onLeave)
     document.addEventListener('pointerenter', onEnter)
 
     return () => {
       cancelAnimationFrame(frame)
       window.removeEventListener('pointermove', onMove)
-      window.removeEventListener('pointerdown', onDown)
-      window.removeEventListener('pointerup', onUp)
       document.removeEventListener('pointerleave', onLeave)
       document.removeEventListener('pointerenter', onEnter)
       document.documentElement.classList.remove('has-custom-cursor')

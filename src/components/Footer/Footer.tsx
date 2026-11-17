@@ -21,7 +21,7 @@ export function Footer() {
 
   return (
     <footer className="footer" id="contact">
-      <PerspectiveGrid variant="floor" className="footer__grid" />
+      <PerspectiveGrid variant="floor" vanishY={-0.33} className="footer__grid" />
 
       <div className="footer__inner">
         <hr className="footer__rule" />
