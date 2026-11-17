@@ -339,11 +339,25 @@ export const site = {
   },
 
   /*
-   * The statement that lands before Selected Work. Supplied verbatim; the
-   * component splits it on spaces for the scroll-linked fill.
+   * The statement that lands before Selected Work.
+   *
+   * Three centred lines; the last one cycles. `rotating[0]` is also the
+   * word the sentence reads as for screen readers and under reduced
+   * motion, so the headline is never announced as a moving target.
+   *
+   * The labels are the owner's own words. Colours and the one-sharp-corner
+   * pill shape follow the reference's composition.
    */
   statement: {
-    text: 'I DESIGN & BUILD PRODUCTS THAT WORK.',
+    lines: ['I DESIGN & BUILD', 'PRODUCTS THAT'],
+    rotating: ['HELP', 'CONVERT', 'SIMPLIFY', 'SHIP'],
+    labels: [
+      { text: 'CURIOUS BY NATURE',            tone: 'cyan',   corner: 'bl', x: '9%',  y: '17%', mx: 14, my: 10 },
+      { text: 'PEOPLE FIRST',                 tone: 'green',  corner: 'tl', x: '72%', y: '24%', mx: -11, my: 13 },
+      { text: 'DETAILS MATTER',               tone: 'purple', corner: 'tr', x: '6%',  y: '63%', mx: 12, my: -9 },
+      { text: 'IDEAS INTO ACTION',            tone: 'orange', corner: 'tl', x: '71%', y: '68%', mx: -13, my: -11 },
+      { text: 'MARKETING MIND, DESIGN HEART', tone: 'yellow', corner: 'tl', x: '31%', y: '84%', mx: 9,  my: -13 },
+    ],
   },
 
   faq: {

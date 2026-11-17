@@ -1,64 +1,230 @@
 /* ------------------------------------------------------------------ *
  * The statement before Selected Work.
  *
- * Proportions measured from the reference's own section: a full-viewport
- * band, the line block held to 1226 of a 1512 frame (81%), set at 120px on
- * a 0.96 leading with -0.02em tracking. Theirs is regular weight; this is
- * the portfolio's bold, per the brief.
+ * Ground, dot pitch, pill shape and drift are measured from the reference
+ * section: #111113, a 21.6px dot grid, pills at 18px/500 with 14/22 padding
+ * and 40px radii bar one square corner, each drifting no more than six
+ * pixels over 6s + 1.3s × index, infinite alternate ease-in-out.
  * ------------------------------------------------------------------ */
 .statement {
   position: relative;
+  isolation: isolate;
   min-height: 100vh;
   min-height: 100svh;
   display: grid;
   place-items: center;
-  padding: calc(80 * var(--u)) calc(104 * var(--u));
+  padding: calc(80 * var(--u)) calc(60 * var(--u));
   overflow: hidden;
+  background-color: #111113;
+  /* the dot grid, drawn rather than fetched */
+  background-image: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.085) 1.1px,
+    transparent 1.2px
+  );
+  background-size: 21.6px 21.6px;
 }
 
+:root[data-theme='light'] .statement {
+  background-color: #f3f3f4;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.1) 1.1px,
+    transparent 1.2px
+  );
+}
+
+/* ---- the three lines ----------------------------------------------- */
+
 .statement__text {
+  position: relative;
+  z-index: 2;
   margin: 0;
-  max-width: calc(1226 * var(--u));
-  font-size: calc(120 * var(--u));
-  line-height: 0.96;
-  letter-spacing: -0.02em;
+  text-align: center;
+  font-size: calc(52 * var(--u));
+  line-height: 1.16;
+  letter-spacing: calc(-3 * var(--u));
   font-weight: 700;
   color: var(--c-fg);
+  pointer-events: none;      /* the labels own the pointer, not the type */
+}
+
+.statement__line { display: block; }
+
+/* ---- the rotating word --------------------------------------------- */
+
+/*
+ * The frame is sized by a hidden copy of the longest alternate, so the
+ * line keeps one width whatever word is showing and nothing reflows. It
+ * clips, so each word arrives from under the baseline and leaves over the
+ * cap line.
+ */
+.statement__rot {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* room for ascenders and descenders inside the clip */
+  padding-block: 0.08em;
+  margin-block: -0.08em;
+}
+
+.statement__sizer {
+  display: block;
+  visibility: hidden;
 }
 
 /*
- * The fill. `--f` runs 0 → 1 per word, written by the scroll handler; the
- * default of 1 is what makes the whole statement readable with no
- * JavaScript and under reduced motion, where no listener is attached.
- *
- * Only opacity changes — the words never move, so the line boxes are fixed
- * and the sweep cannot shift anything.
+ * Only the word arriving and the word leaving are ever rendered. The
+ * others are hidden outright rather than merely parked outside the clip,
+ * so a transition that stalls — a throttled tab, a dropped frame — can
+ * never leave a third word sitting in the frame.
  */
-.statement__w {
-  opacity: calc(0.14 + 0.86 * var(--f, 1));
+.statement__word {
+  position: absolute;
+  left: 50%;
+  top: 0.08em;
+  transform: translate(-50%, 110%);
+  white-space: nowrap;
+  visibility: hidden;
+}
+.statement__word.is-on {
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+.statement__word.is-out {
+  transform: translate(-50%, -110%);
+  visibility: visible;
 }
 
-/* ---- tablet -------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .statement__word {
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/*
+ * Reduced motion: the first word only, standing still. It is the one the
+ * accessible sentence names, so the two always agree.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .statement__word { display: none; }
+  .statement__word:first-of-type {
+    display: block;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ---- the labels ----------------------------------------------------- */
+
+.statement__labels {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.statement__label {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  /* --px/--py are the pointer lean, written by the component */
+  translate: var(--px, 0) var(--py, 0);
+  transition: translate 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.statement__pill {
+  position: relative;
+  display: block;
+  padding: calc(14 * var(--u)) calc(22 * var(--u));
+  border-radius: calc(40 * var(--u));
+  font-size: calc(18 * var(--u));
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* one square corner each, as the reference cuts them */
+.is-sharp-bl .statement__pill { border-bottom-left-radius: 0; }
+.is-sharp-tl .statement__pill { border-top-left-radius: 0; }
+.is-sharp-tr .statement__pill { border-top-right-radius: 0; }
+
+.is-cyan   .statement__pill { background: #00e4fd; color: #000000; }
+.is-green  .statement__pill { background: #5adba5; color: #000000; }
+.is-purple .statement__pill { background: #7f00fd; color: #ffffff; }
+.is-orange .statement__pill { background: #fd7a00; color: #000000; }
+.is-yellow .statement__pill { background: #fdcf00; color: #000000; }
+
+.statement__arrow {
+  position: absolute;
+  left: calc(-13 * var(--u));
+  bottom: calc(-16 * var(--u));
+  width: calc(26 * var(--u));
+  height: calc(26 * var(--u));
+  color: currentColor;
+}
+.is-cyan   .statement__arrow { color: #00e4fd; }
+.is-green  .statement__arrow { color: #5adba5; }
+.is-purple .statement__arrow { color: #7f00fd; }
+.is-orange .statement__arrow { color: #fd7a00; }
+.is-yellow .statement__arrow { color: #fdcf00; }
+
+/* ---- drift ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .statement__pill {
+    animation: statement-drift 6s ease-in-out infinite alternate;
+  }
+  .statement__label:nth-child(2) .statement__pill { animation-duration: 7.3s; }
+  .statement__label:nth-child(3) .statement__pill { animation-duration: 8.6s; }
+  .statement__label:nth-child(4) .statement__pill { animation-duration: 9.9s; }
+  .statement__label:nth-child(5) .statement__pill { animation-duration: 11.2s; }
+
+  /* nothing animates while the section is off screen */
+  .statement.is-paused .statement__pill { animation-play-state: paused; }
+}
+
+@keyframes statement-drift {
+  0%   { translate: 0 0; }
+  30%  { translate: 6px -4px; }
+  60%  { translate: -3px 5px; }
+  100% { translate: 4px 2px; }
+}
+
+/* ---- tablet --------------------------------------------------------- */
 
 @media (max-width: 1023px) {
   .statement {
-    padding-inline: 24px;
-    padding-block: 64px;
+    padding: 72px 24px;
+    background-size: 18px 18px;
   }
-  .statement__text {
-    max-width: none;
-    font-size: 56px;
-  }
+  .statement__text { font-size: 40px; letter-spacing: -2px; }
+  .statement__pill { font-size: 14px; padding: 10px 16px; border-radius: 30px; }
+  .statement__arrow { width: 20px; height: 20px; left: -10px; bottom: -12px; }
 }
 
-/* ---- phone --------------------------------------------------------- */
+/* ---- phone: labels move clear of the type --------------------------- */
 
 @media (max-width: 759px) {
   .statement {
-    min-height: 72vh;
-    min-height: 72svh;
-    padding-inline: 20px;
-    padding-block: 48px;
+    min-height: 92vh;
+    min-height: 92svh;
+    padding: 56px 20px;
+    background-size: 15px 15px;
   }
-  .statement__text { font-size: 34px; }
+  .statement__text { font-size: 27px; letter-spacing: -1.2px; }
+
+  .statement__pill { font-size: 11px; padding: 7px 12px; border-radius: 22px; }
+  .statement__arrow { width: 15px; height: 15px; left: -7px; bottom: -9px; }
+
+  /*
+   * Re-placed for a narrow column: two above the type, two below, one at
+   * the foot, none of them crossing the headline or the edges.
+   */
+  .statement__label:nth-child(1) { left: 4%;  top: 11%; }
+  .statement__label:nth-child(2) { left: 56%; top: 20%; }
+  .statement__label:nth-child(3) { left: 3%;  top: 72%; }
+  .statement__label:nth-child(4) { left: 52%; top: 80%; }
+  .statement__label:nth-child(5) { left: 8%;  top: 89%; }
 }
