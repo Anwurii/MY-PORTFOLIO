@@ -17,29 +17,26 @@
   width: calc(1304 * var(--u));
   margin-inline: auto;
   display: grid;
-  grid-template-columns: calc(400 * var(--u)) 1fr;
-  column-gap: calc(96 * var(--u));
+  grid-template-columns: calc(440 * var(--u)) 1fr;
+  column-gap: calc(80 * var(--u));
   align-items: start;
 }
 
-/* ---- the figure ---------------------------------------------------- */
+/* ---- the headline -------------------------------------------------- */
 
-.exp__stat {
-  margin: 0 0 calc(18 * var(--u));
-  font-size: calc(96 * var(--u));
-  line-height: 0.9;
-  letter-spacing: -0.04em;
-  font-weight: 500;
-  color: var(--c-fg);
-}
-
-.exp__stat-sub {
+/*
+ * One muted statement, wrapping in its own column the way the reference's
+ * left block does. #999 on black measures 6.19:1, comfortably past AA for
+ * text this size.
+ */
+.exp__headline {
   margin: 0;
-  max-width: calc(330 * var(--u));
-  font-size: calc(20 * var(--u));
-  line-height: calc(28 * var(--u));
+  max-width: calc(420 * var(--u));
+  font-size: calc(52 * var(--u));
+  line-height: 1.12;
   letter-spacing: -0.03em;
-  color: var(--c-fg-muted);
+  font-weight: 500;
+  color: var(--c-heading-gray);
 }
 
 /* ---- the history --------------------------------------------------- */
@@ -51,7 +48,7 @@
 }
 
 .exp__item {
-  padding-block: calc(26 * var(--u));
+  padding-block: calc(30 * var(--u));
 }
 .exp__item + .exp__item { border-top: 1px solid var(--c-hairline); }
 .exp__item:first-child { padding-top: 0; }
@@ -68,18 +65,23 @@
   gap: calc(24 * var(--u));
 }
 
+/*
+ * Company and employment type share a size and weight — 30px Medium — and
+ * are told apart by colour alone, as the reference does it. No Helvetica
+ * Neue font files were supplied, so 500 resolves to the system
+ * Helvetica Neue Medium on macOS and iOS, and to Arial elsewhere.
+ */
 .exp__company {
   margin: 0;
-  font-size: calc(24 * var(--u));
-  line-height: 1.25;
-  letter-spacing: calc(-1 * var(--u));
-  font-weight: 700;
+  font-size: calc(30 * var(--u));
+  line-height: 1.22;
+  letter-spacing: -0.03em;
+  font-weight: 500;
   color: var(--c-fg);
 }
 
-/* Shown only once an employment type is supplied — see site.ts. */
 .exp__employment {
-  font-weight: 400;
+  font-weight: 500;
   color: var(--c-fg-muted);
 }
 
@@ -94,7 +96,7 @@
 }
 
 .exp__summary {
-  margin: calc(10 * var(--u)) 0 0;
+  margin: calc(12 * var(--u)) 0 0;
   max-width: calc(620 * var(--u));
   font-size: calc(20 * var(--u));
   line-height: calc(28 * var(--u));
@@ -115,6 +117,35 @@
   border-radius: 2px;
 }
 
+/* ---- motion -------------------------------------------------------- *
+ * Measured from the reference's own experience list: each entry comes up
+ * 10px with opacity, transform over 500ms and opacity over 400ms on
+ * cubic-bezier(0.23, 1, 0.32, 1), staggered 100ms + index × 45ms.
+ *
+ * The list is the thing that is observed, and the entries stagger off --i
+ * underneath it, so the cascade keeps its rhythm however the visitor
+ * arrives. The reference's own left column has no separate headline
+ * reveal — only a digit roller on its number — so the headline here takes
+ * the same motion as the entries, with no delay.
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  .exp__headline,
+  .exp__item {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 400ms cubic-bezier(0.23, 1, 0.32, 1) var(--d, 0ms),
+      transform 500ms cubic-bezier(0.23, 1, 0.32, 1) var(--d, 0ms);
+  }
+  .exp__item { --d: calc(100ms + var(--i, 0) * 45ms); }
+
+  .exp__headline.is-in,
+  .exp__list.is-in .exp__item {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ---- tablet -------------------------------------------------------- */
 
 @media (max-width: 1023px) {
@@ -125,9 +156,8 @@
     grid-template-columns: 1fr;
     row-gap: 40px;
   }
-  .exp__stat { font-size: 64px; margin-bottom: 12px; }
-  .exp__stat-sub { font-size: 17px; line-height: 24px; max-width: 42ch; }
-  .exp__company { font-size: 20px; letter-spacing: -0.5px; }
+  .exp__headline { font-size: 34px; max-width: none; }
+  .exp__company { font-size: 24px; }
   .exp__years { font-size: 16px; }
   .exp__summary { font-size: 16px; line-height: 23px; max-width: none; }
   .exp__item { padding-block: 20px; }
@@ -138,7 +168,7 @@
 @media (max-width: 759px) {
   .exp { padding-block: 40px; }
   .exp__grid { margin-inline: 20px; row-gap: 32px; }
-  .exp__stat { font-size: 54px; }
+  .exp__headline { font-size: 27px; }
 
   /*
    * The year drops under the company rather than squeezing against it, so

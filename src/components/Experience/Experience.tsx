@@ -1,6 +1,8 @@
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { site } from '../../data/site'
 import { Reveal } from '../Reveal/Reveal'
+import { ResumeModal } from './ResumeModal'
 import './Experience.css'
 
 const { experience } = site
@@ -28,24 +30,33 @@ export function Experience() {
       </h2>
 
       <div className="exp__grid">
-        <Reveal as="div" className="exp__intro">
-          <p className="exp__stat">{experience.stat}</p>
-          <p className="exp__stat-sub">{experience.statSub}</p>
+        <Reveal as="p" effect="none" className="exp__headline">
+          {experience.headline}
         </Reveal>
 
-        <ol className="exp__list">
-          {experience.entries.map((e, i) => (
-            <Reveal as="li" className="exp__item" key={e.id} delay={Math.min(i, 3) * 70}>
-              <div className="exp__head">
-                <h3 className="exp__company">
-                  <Company entry={e} />
-                </h3>
-                <p className="exp__years">{e.years}</p>
-              </div>
-              <p className="exp__summary">{e.summary}</p>
-            </Reveal>
-          ))}
-        </ol>
+        <div className="exp__right">
+          {/*
+            One observer on the list, not one per entry: the reference
+            triggers the whole batch together and staggers the children off
+            an --i index, which is what gives the cascade its even rhythm
+            however fast the visitor scrolls.
+          */}
+          <Reveal as="ol" effect="none" className="exp__list">
+            {experience.entries.map((e, i) => (
+              <li className="exp__item" key={e.id} style={{ '--i': i } as CSSProperties}>
+                <div className="exp__head">
+                  <h3 className="exp__company">
+                    <Company entry={e} />
+                  </h3>
+                  <p className="exp__years">{e.years}</p>
+                </div>
+                <p className="exp__summary">{e.summary}</p>
+              </li>
+            ))}
+          </Reveal>
+
+          <ResumeModal />
+        </div>
       </div>
     </section>
   )

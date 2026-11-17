@@ -1,0 +1,185 @@
+/* ------------------------------------------------------------------ *
+ * "See more experience" and the résumé dialog.
+ * ------------------------------------------------------------------ */
+
+/* The page keeps its scroll offset underneath, so closing returns the
+   visitor to exactly where they were. */
+.modal-open body { overflow: hidden; }
+
+.exp__cta {
+  margin-top: calc(34 * var(--u));
+  padding: calc(13 * var(--u)) calc(26 * var(--u));
+  border: 1px solid var(--c-rule);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--c-fg);
+  font-family: var(--font-sans);
+  font-size: calc(18 * var(--u));
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+}
+.exp__cta:hover {
+  background: var(--c-fg);
+  color: var(--c-bg);
+}
+.exp__cta:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 3px;
+}
+
+/* ---- the dialog ---------------------------------------------------- */
+
+.rmodal {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 48px);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.rmodal__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(900px, 100%);
+  height: min(84vh, 1000px);
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+}
+
+/* ---- bar ----------------------------------------------------------- */
+
+.rmodal__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--c-hairline);
+}
+
+.rmodal__title {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  color: var(--c-fg);
+}
+
+.rmodal__actions { display: flex; align-items: center; gap: 10px; }
+
+.rmodal__action,
+.rmodal__close {
+  padding: 9px 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-rule);
+  background: transparent;
+  color: var(--c-fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.rmodal__action:hover,
+.rmodal__close:hover { background: var(--c-fg); color: var(--c-bg); }
+.rmodal__action:focus-visible,
+.rmodal__close:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }
+
+/* ---- document ------------------------------------------------------ */
+
+.rmodal__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;              /* the document scrolls, not the page */
+  -webkit-overflow-scrolling: touch;
+  background: var(--c-bg);
+}
+
+.rmodal__doc {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.rmodal__fallback,
+.rmodal__missing {
+  margin: 0;
+  padding: 28px;
+  font-size: 17px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--c-fg-muted);
+}
+
+/* ---- motion -------------------------------------------------------- *
+ * The panel rises from below the fold and settles in the middle; the
+ * backdrop only fades. Both are declared inside no-preference, so reduced
+ * motion gets the dialog already in place.
+ * ------------------------------------------------------------------ */
+/*
+ * A transition, not a keyframe animation. A keyframe holds its from-state
+ * for as long as the browser considers it running, which in a throttled tab
+ * parks the panel off the bottom of the screen indefinitely. ResumeModal
+ * adds `is-in` on a timer, which fires even there.
+ */
+.rmodal__panel {
+  opacity: 0;
+  transform: translateY(100%);
+}
+.rmodal__panel.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rmodal__panel {
+    transition:
+      opacity 260ms var(--ease-out),
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .rmodal { animation: rmodal-veil 220ms var(--ease-out); }
+}
+
+/* Reduced motion: already in place, nothing travels. */
+@media (prefers-reduced-motion: reduce) {
+  .rmodal__panel { opacity: 1; transform: none; }
+}
+
+@keyframes rmodal-veil {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ---- phone: almost the whole screen -------------------------------- */
+
+@media (max-width: 759px) {
+  .exp__cta { margin-top: 24px; font-size: 16px; padding: 12px 20px; }
+
+  .rmodal { padding: 10px; }
+  .rmodal__panel {
+    width: 100%;
+    height: 94vh;
+    border-radius: 14px;
+  }
+  .rmodal__bar { padding: 12px 12px 12px 16px; }
+  .rmodal__title { font-size: 17px; }
+  .rmodal__action,
+  .rmodal__close {
+    /* comfortable targets within thumb reach at the top of the sheet */
+    padding: 11px 14px;
+    font-size: 14px;
+  }
+}

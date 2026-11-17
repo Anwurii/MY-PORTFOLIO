@@ -245,9 +245,18 @@ export const site = {
    */
   experience: {
     label: 'Selected experience',
-    stat: '5+',
-    statSub:
-      'years in product design transitioned from marketing to product design.',
+    headline:
+      '5+ years in product design, transitioned from marketing to product design.',
+    cta: 'See more experience',
+    resume: {
+      title: 'Résumé',
+      close: 'Close',
+      download: 'Download résumé',
+      open: 'Open PDF',
+      /** Shown in place of the document until a file is supplied. */
+      missing:
+        'The résumé file has not been supplied yet. Drop a PDF into public/resume/ and set resumeUrl in src/data/site.ts.',
+    },
     entries: [
       {
         id: 'senta',
