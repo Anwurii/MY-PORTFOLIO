@@ -1,148 +1,204 @@
 /* ------------------------------------------------------------------ *
- * Selected Work — measured at the 1512 design frame:
- *   container  104 → 1408        tiles 534.5 × 420.5 (ratio 1.271)
- *   col gap    235               row gap 128.9
- *   heading    y 1534.9 → 1599.4, centred, between the two rows
+ * Selected Work — sticky introduction, stacked previews.
+ *
+ * Numbers are CSS px at the 1512 design frame. The content block is the
+ * site's own 1304 container; inside it the introduction takes 400 and the
+ * previews 808, with a 96 gap, which is close to the 46/54 split of the
+ * reference at the same width.
  * ------------------------------------------------------------------ */
 .work {
-  /* row 1 starts at y 1081.5; the ticker band ends just above it */
-  padding-top: calc(59.5 * var(--u));
+  padding-top: calc(96 * var(--u));
+  padding-bottom: calc(96 * var(--u));
 }
 
 .work__grid {
-  display: grid;
   width: calc(1304 * var(--u));
   margin-inline: auto;
-  grid-template-columns: repeat(2, calc(534.5 * var(--u)));
-  grid-template-rows: auto auto auto;
-  justify-content: space-between;
-  row-gap: calc(21 * var(--u));
-}
-
-.work__tile {
-  position: relative;          /* next/image fill */
-  margin: 0;
-  aspect-ratio: 534.5 / 420.5;
-  overflow: hidden;
-  border-radius: calc(10 * var(--u));
-  background: var(--c-surface);
-}
-.work__tile--1 { grid-area: 1 / 1; }
-.work__tile--2 { grid-area: 1 / 2; }
-.work__tile--3 { grid-area: 3 / 1; }
-.work__tile--4 { grid-area: 3 / 2; }
-
-/* The heading occupies the band between the two rows. */
-.work__title {
-  grid-area: 2 / 1 / 3 / 3;
-  justify-self: center;
-  align-self: center;
-  font-size: calc(86.5 * var(--u));
-  line-height: 1;
-  letter-spacing: -0.02em;
-  font-weight: 500;
-  color: var(--c-heading-gray);
-  text-align: center;
+  display: grid;
+  grid-template-columns: calc(400 * var(--u)) 1fr;
+  column-gap: calc(96 * var(--u));
+  align-items: start;
 }
 
 /*
- * Opens from the centre outward with a slight scale. The element keeps its
- * size throughout — only clip-path and transform change — so the rows above
- * and below never move.
+ * The track is left to stretch to the full height of the list on purpose:
+ * that is what gives the sticky block its travel, and what makes it let go
+ * at the end of the section without any script.
  */
-.work__title-inner { display: inline-block; will-change: clip-path, transform; }
+.work__aside { align-self: stretch; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .work__title-inner {
-    clip-path: inset(0 50% 0 50%);
-    transform: scale(0.96);
-    transition: clip-path 800ms var(--ease-out), transform 800ms var(--ease-out);
-  }
-  .work__title-inner.is-in {
-    clip-path: inset(0 -2% 0 -2%);
-    transform: scale(1);
-  }
+.work__sticky {
+  position: sticky;
+  /* clear of the fixed navigation */
+  top: calc(140 * var(--u));
+}
+
+.work__title {
+  margin: 0 0 calc(24 * var(--u));
+  font-size: calc(52 * var(--u));
+  line-height: 1.08;
+  letter-spacing: calc(-4 * var(--u));
+  font-weight: 700;
+  color: var(--c-heading-gray);
+}
+
+.work__intro {
+  margin: 0;
+  font-size: calc(28 * var(--u));
+  line-height: calc(34 * var(--u));
+  letter-spacing: calc(-2 * var(--u));
+  font-weight: 400;
+  color: var(--c-fg-muted);
+  max-width: calc(380 * var(--u));
+}
+
+/* ---- the previews ------------------------------------------------- */
+
+.work__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  row-gap: calc(120 * var(--u));
 }
 
 .work__link {
   display: block;
-  width: 100%;
-  height: 100%;
   position: relative;
+  border-radius: calc(20 * var(--u));
+  overflow: hidden;
+  background: var(--c-surface);
+  text-decoration: none;
 }
+
+/*
+ * One container for all four. `overflow: hidden` on the link is what rounds
+ * the artwork, so the scale on hover never spills past the corners.
+ */
+.work__media {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.4;
+}
+
 .work__img {
-  object-fit: cover;
-  object-position: center;
-  transition: transform 620ms var(--ease-out);
+  object-fit: cover;              /* object-position is per artwork */
 }
 
-.work__tile.is-placeholder { outline: 1px dashed var(--c-hairline); outline-offset: -1px; }
+.work__link.is-placeholder { outline: 1px dashed var(--c-hairline); outline-offset: -1px; }
 
-/* ---- name over artwork ---- */
-.work__veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0) 52%);
-  opacity: 0;
-  transition: opacity 260ms var(--ease-out);
-  pointer-events: none;
+.work__link:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 4px;
 }
-.work__name {
+
+/* ---- the label ---------------------------------------------------- *
+ * On a fine pointer the site's own cursor carries this label, so it stays
+ * hidden there and nothing competes. It appears on keyboard focus, on
+ * touch, and whenever that cursor is not running — reduced motion, coarse
+ * pointers, or a cursor that failed to start.
+ * ------------------------------------------------------------------ */
+.work__cta {
   position: absolute;
-  left: calc(28 * var(--u));
+  left: calc(22 * var(--u));
   bottom: calc(22 * var(--u));
   z-index: 1;
-  font-size: calc(30 * var(--u));
+  padding: calc(9 * var(--u)) calc(18 * var(--u));
+  border-radius: var(--r-pill);
+  background: var(--c-fg);
+  color: var(--c-bg);
+  font-size: calc(16 * var(--u));
   line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: #fff;
+  letter-spacing: -0.01em;
   opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
   pointer-events: none;
 }
 
-.work__link:hover .work__img,
-.work__link:focus-visible .work__img { transform: scale(1.03); }
-.work__link:hover .work__veil,
-.work__link:focus-visible .work__veil { opacity: 1; }
-.work__link:hover .work__name,
-.work__link:focus-visible .work__name { opacity: 1; transform: translateY(0); }
+.work__link:focus-visible .work__cta { opacity: 1; }
 
-/* Touch and other hoverless pointers: keep the name on screen. */
+html:not(.has-custom-cursor) .work__link:hover .work__cta { opacity: 1; }
+
 @media (hover: none) {
-  .work__veil { opacity: 1; }
-  .work__name { opacity: 1; transform: none; }
+  .work__cta { opacity: 1; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .work__img, .work__veil, .work__name { transition: none; }
-  .work__link:hover .work__img { transform: none; }
+/* ---- caption ------------------------------------------------------ *
+ * Name on the left, the short line on the right, both on one baseline,
+ * aligned to the edges of the preview above them.
+ * ------------------------------------------------------------------ */
+.work__caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(32 * var(--u));
+  margin-top: calc(20 * var(--u));
 }
 
-/* ---- tablet ---- */
+.work__name {
+  margin: 0;
+  font-size: calc(24 * var(--u));
+  line-height: 1.2;
+  letter-spacing: calc(-1 * var(--u));
+  font-weight: 700;
+  color: var(--c-fg);
+}
+
+.work__desc {
+  margin: 0;
+  font-size: calc(20 * var(--u));
+  line-height: calc(28 * var(--u));
+  letter-spacing: calc(-1 * var(--u));
+  font-weight: 400;
+  color: var(--c-fg-muted);
+  text-align: right;
+}
+
+/* ---- motion -------------------------------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .work__img { transition: transform 260ms var(--ease-out); }
+  .work__link:hover .work__img,
+  .work__link:focus-visible .work__img { transform: scale(1.02); }
+  .work__cta { transition: opacity 200ms var(--ease-out); }
+}
+
+/* ---- tablet -------------------------------------------------------- */
+
 @media (max-width: 1023px) {
-  .work__grid { width: auto; margin-inline: var(--gutter-m, 32px); column-gap: 24px;
-                grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: stretch; }
-  .work__title { font-size: clamp(2.4rem, 7vw, 4.5rem); }
+  .work { padding-block: 56px; }
+  .work__grid {
+    width: auto;
+    margin-inline: 24px;
+    grid-template-columns: 1fr;
+    row-gap: 40px;
+  }
+  /* no second column to scroll past, so nothing to stick to */
+  .work__aside { align-self: auto; }
+  .work__sticky { position: static; }
+  .work__title { font-size: 38px; letter-spacing: -2px; }
+  .work__intro { font-size: 20px; line-height: 26px; letter-spacing: -0.6px; max-width: 46ch; }
+  .work__list { row-gap: 56px; }
+  .work__name { font-size: 20px; }
+  .work__desc { font-size: 16px; line-height: 22px; }
+  .work__cta { font-size: 14px; padding: 8px 14px; left: 16px; bottom: 16px; }
 }
 
-/* ---- mobile: one column, heading first ---- */
+/* ---- phone --------------------------------------------------------- */
+
 @media (max-width: 759px) {
-  .work { padding-top: 40px; padding-bottom: 48px; }
-  .work__grid {
-    margin-inline: 20px;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: none;
-    row-gap: 16px;
+  .work { padding-block: 40px; }
+  .work__grid { margin-inline: 20px; row-gap: 32px; }
+  .work__title { font-size: 30px; }
+  .work__intro { font-size: 17px; line-height: 23px; letter-spacing: -0.4px; }
+  .work__list { row-gap: 44px; }
+  .work__link { border-radius: 14px; }
+
+  /* the two halves of the caption stop sharing a line */
+  .work__caption {
+    display: grid;
+    gap: 4px;
+    margin-top: 14px;
   }
-  .work__tile--1, .work__tile--2, .work__tile--3, .work__tile--4 { grid-area: auto; }
-  .work__title {
-    grid-area: auto;
-    order: -1;
-    justify-self: start;
-    text-align: left;
-    padding-block: 0 8px;
-    font-size: clamp(2rem, 11vw, 3rem);
-  }
+  .work__desc { text-align: left; }
 }

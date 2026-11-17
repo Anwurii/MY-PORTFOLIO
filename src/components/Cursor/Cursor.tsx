@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import './Cursor.css'
 
 const INTERACTIVE = 'a[href], button, [role="button"], summary, label[for]'
+/** Elements that turn the dot into a labelled pill — see SelectedWork. */
+const LABELLED = '[data-cursor-label]'
 const TEXT_ENTRY = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]'
 
 /**
@@ -18,6 +20,11 @@ const TEXT_ENTRY = 'input, textarea, select, [contenteditable=""], [contentedita
  * frames where something actually changed. There is no CSS transition on
  * `transform`; a transition there is what made the old version feel heavy.
  *
+ * Over an element carrying `data-cursor-label` the dot becomes a small
+ * rounded label holding that text, clamped inside that element's bounds so
+ * it never escapes the artwork. This is why Selected Work has no floating
+ * label of its own — there is one pointer object on the page, not two.
+ *
  * Only runs for a fine, hovering pointer with no reduced-motion preference,
  * and the native cursor is hidden only after the first frame is painted, so
  * a failure here can never leave a visitor with no pointer at all.
@@ -25,6 +32,7 @@ const TEXT_ENTRY = 'input, textarea, select, [contenteditable=""], [contentedita
 export function Cursor() {
   const [enabled, setEnabled] = useState(false)
   const dotRef = useRef<HTMLDivElement>(null)
+  const labelRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     const queries = [
@@ -40,7 +48,8 @@ export function Cursor() {
 
   useEffect(() => {
     const dot = dotRef.current
-    if (!enabled || !dot) return
+    const label = labelRef.current
+    if (!enabled || !dot || !label) return
 
     let x = 0
     let y = 0
@@ -49,6 +58,12 @@ export function Cursor() {
     let dirty = false
     let painted = false
     let frame = 0
+    let host: Element | null = null
+    let pillW = 0
+    let pillH = 0
+
+    const clamp = (v: number, lo: number, hi: number) =>
+      hi < lo ? (lo + hi) / 2 : Math.min(Math.max(v, lo), hi)
 
     const render = () => {
       frame = requestAnimationFrame(render)
@@ -68,16 +83,43 @@ export function Cursor() {
     }
 
     const onMove = (e: PointerEvent) => {
-      x = e.clientX
-      y = e.clientY
       dirty = true
       const el = e.target as Element | null
+
+      // the labelled state is resolved first; it owns both size and position
+      const nextHost = el?.closest?.(LABELLED) ?? null
+      if (nextHost !== host) {
+        host = nextHost
+        if (host) {
+          label.textContent = host.getAttribute('data-cursor-label') ?? ''
+          dot.classList.add('is-label')
+        } else {
+          dot.classList.remove('is-label')
+          label.textContent = ''
+        }
+        // one measurement per change, not per move
+        pillW = dot.offsetWidth
+        pillH = dot.offsetHeight
+      }
+
       if (el?.closest?.(TEXT_ENTRY)) {
         dot.classList.add('is-over-text')
         targetScale = 1
       } else {
         dot.classList.remove('is-over-text')
-        targetScale = el?.closest?.(INTERACTIVE) ? 1.8 : 1
+        // a label is already the right size; it must not also blow up
+        targetScale = host ? 1 : el?.closest?.(INTERACTIVE) ? 1.8 : 1
+      }
+
+      if (host) {
+        // stay inside the artwork, however close the pointer gets to an edge
+        const r = host.getBoundingClientRect()
+        const m = 12
+        x = clamp(e.clientX, r.left + pillW / 2 + m, r.right - pillW / 2 - m)
+        y = clamp(e.clientY, r.top + pillH / 2 + m, r.bottom - pillH / 2 - m)
+      } else {
+        x = e.clientX
+        y = e.clientY
       }
     }
 
@@ -99,5 +141,9 @@ export function Cursor() {
   }, [enabled])
 
   if (!enabled) return null
-  return <div className="cursor is-hidden" ref={dotRef} aria-hidden="true" />
+  return (
+    <div className="cursor is-hidden" ref={dotRef} aria-hidden="true">
+      <span className="cursor__label" ref={labelRef} />
+    </div>
+  )
 }

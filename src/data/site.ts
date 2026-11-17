@@ -29,6 +29,16 @@ export interface Project {
   tags: readonly string[]
   image: string
   alt: string
+  /**
+   * Short caption shown beside the project name. Composed only from that
+   * project's own Behance tags — no year, because none is published.
+   */
+  caption: string
+  /**
+   * object-position for the preview, chosen per artwork so the consistent
+   * container never crops a screen or a wordmark that matters.
+   */
+  objectPosition: string
   /** true when `image` is a stand-in, not the real artwork */
   placeholder?: boolean
 }
@@ -124,6 +134,11 @@ export const site = {
 
   work: {
     heading: 'SELECTED WORK',
+    /** Supplied with the brief, kept verbatim. */
+    intro:
+      'A few projects that show how I turn ideas and complex problems into clear, usable experiences.',
+    /** Shown on the preview on touch and keyboard focus. */
+    cta: 'View case study',
     /*
      * Matched one-to-one against the publicly listed projects at
      * behance.net/anwurii. Titles, URLs and tags are copied from there;
@@ -140,6 +155,9 @@ export const site = {
         tags: ['Figma', 'Photoshop', 'Product Design', 'UI/UX', 'Web Design', 'Fintech', 'Landing page'],
         image: '/images/work/senta-web-design.jpg',
         alt: 'Senta web design — a board of light website screens and components',
+        caption: 'Fintech · Web design',
+        /* keeps the title bar and the hero board; trims the part-cut cards along the bottom */
+        objectPosition: '50% 42%',
       },
       {
         id: 'senta-app',
@@ -151,6 +169,9 @@ export const site = {
         tags: ['Figma', 'Photoshop', 'Illustrator', 'Branding', 'Product Design', 'UI/UX', 'Fintech', 'Mobile app'],
         image: '/images/work/senta-app.jpg',
         alt: 'Senta mobile app — a hand holding a phone showing a balance screen on a purple backdrop',
+        caption: 'Fintech · Mobile app and branding',
+        /* the phone sits dead centre */
+        objectPosition: '50% 50%',
       },
       {
         id: 'eventro',
@@ -161,6 +182,9 @@ export const site = {
         tags: ['Figma', 'Photoshop', 'Branding', 'Product Design', 'UI/UX', 'Mobile app', 'Booking'],
         image: '/images/work/eventro.jpg',
         alt: 'Eventro — a hand holding a phone showing an events app over the Eventro wordmark',
+        caption: 'Booking · Mobile app and branding',
+        /* centred so both ends of the Eventro wordmark survive the side crop */
+        objectPosition: '50% 50%',
       },
       {
         id: 'kariiya',
@@ -171,6 +195,8 @@ export const site = {
         tags: ['Figma', 'Product Design', 'UI/UX', 'Web Design', 'SaaS', 'Landing page'],
         image: '/images/work/kariya-placeholder.svg',
         alt: 'Placeholder — Kariiya artwork has not been supplied yet',
+        caption: 'AI SaaS · Web design',
+        objectPosition: '50% 50%',
         placeholder: true,
       },
     ] satisfies Project[],

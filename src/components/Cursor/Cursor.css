@@ -22,6 +22,30 @@
 .cursor.is-over-text { opacity: 0; }
 
 /*
+ * The labelled state: the dot becomes a small rounded label. The blend mode
+ * has to go with it — difference would invert the text — so this is a plain
+ * light pill on dark type, sized by its own content. Cursor.tsx clamps it
+ * inside the element it belongs to.
+ */
+.cursor__label {
+  display: none;
+  white-space: nowrap;
+  font-size: 16px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #000000;
+}
+
+.cursor.is-label {
+  width: auto;
+  height: auto;
+  padding: 10px 16px;
+  background: #ffffff;
+  mix-blend-mode: normal;
+}
+.cursor.is-label .cursor__label { display: block; }
+
+/*
  * The native pointer is hidden only once the dot has painted a frame, so a
  * failure to initialise leaves the normal cursor in place. Text fields keep
  * their caret.

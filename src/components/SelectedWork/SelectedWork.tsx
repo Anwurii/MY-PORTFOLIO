@@ -9,58 +9,73 @@ const { work } = site
 /**
  * Selected Work.
  *
- * Two columns of artwork with the section heading between the rows, as the
- * reference has it. Measured at the 1512 frame: tiles 534.5 × 420.5,
- * container 104 → 1408, column gap 235.
+ * A narrow introduction on the left that stays put while the four previews
+ * scroll past it on the right, then releases at the end of the section. The
+ * left column is a full-height grid track holding a `position: sticky` block,
+ * so the stop is the section boundary itself — no scroll listener, nothing to
+ * hijack.
  *
- * Each tile is one link to its internal case study. The project name sits
- * over the artwork and fades up on hover or keyboard focus; on touch (where
- * there is no hover) it stays visible, so nothing is hidden behind an
- * interaction a finger cannot perform.
+ * Each preview is one real link to its internal case study. On a fine
+ * pointer the "View case study" label is carried by the site's own cursor
+ * (see Cursor.tsx) rather than a second floating element; on touch, on
+ * keyboard focus, and wherever that cursor is switched off, the label in the
+ * corner of the preview takes over.
+ *
+ * Previews share one 1.4:1 container. The artworks run from 1.27:1 to 1.50:1,
+ * so each one carries its own `objectPosition` in site.ts and nothing is
+ * stretched.
  */
 export function SelectedWork() {
   return (
     <section className="work" id="work" aria-labelledby="work-title">
       <div className="work__grid">
-        {work.projects.map((p, i) => (
-          <Reveal
-            as="figure"
-            delay={(i % 2) * 90}
-            className={`work__tile work__tile--${i + 1}${p.placeholder ? ' is-placeholder' : ''}`}
-            key={p.id}
-          >
-            <Link className="work__link" href={`/work/${p.slug}`}>
-              <Image
-                className="work__img"
-                src={p.image}
-                alt={p.alt}
-                fill
-                sizes="(max-width: 759px) 92vw, (max-width: 1023px) 46vw, 535px"
-              />
-              <span className="work__veil" aria-hidden="true" />
-              <figcaption className="work__name">
-                {p.title}
-                {p.placeholder ? (
-                  <span className="u-sr-only"> — artwork not supplied yet</span>
-                ) : null}
-              </figcaption>
-            </Link>
-          </Reveal>
-        ))}
+        <div className="work__aside">
+          <div className="work__sticky">
+            <h2 id="work-title" className="work__title">
+              {work.heading}
+            </h2>
+            <p className="work__intro">{work.intro}</p>
+          </div>
+        </div>
 
-        {/* Revealed from the centre outward; the final position never moves. */}
-        <h2 id="work-title" className="work__title">
-          <RevealHeading>{work.heading}</RevealHeading>
-        </h2>
+        <ol className="work__list">
+          {work.projects.map((p) => (
+            <Reveal as="li" className="work__item" key={p.id}>
+              <Link
+                className={`work__link${p.placeholder ? ' is-placeholder' : ''}`}
+                href={`/work/${p.slug}`}
+                aria-label={`${p.title} — ${work.cta}`}
+                /* read by the custom cursor, which becomes the hover label */
+                data-cursor-label={work.cta}
+              >
+                <span className="work__media">
+                  <Image
+                    className="work__img"
+                    src={p.image}
+                    alt={p.alt}
+                    fill
+                    style={{ objectPosition: p.objectPosition }}
+                    sizes="(max-width: 759px) 92vw, (max-width: 1023px) 94vw, 808px"
+                  />
+                </span>
+                <span className="work__cta" aria-hidden="true">
+                  {work.cta}
+                </span>
+              </Link>
+
+              <div className="work__caption">
+                <h3 className="work__name">
+                  {p.title}
+                  {p.placeholder ? (
+                    <span className="u-sr-only"> — artwork not supplied yet</span>
+                  ) : null}
+                </h3>
+                <p className="work__desc">{p.caption}</p>
+              </div>
+            </Reveal>
+          ))}
+        </ol>
       </div>
     </section>
-  )
-}
-
-function RevealHeading({ children }: { children: string }) {
-  return (
-    <Reveal as="span" effect="none" className="work__title-inner">
-      {children}
-    </Reveal>
   )
 }
