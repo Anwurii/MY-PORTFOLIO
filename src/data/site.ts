@@ -53,6 +53,12 @@ export interface ExperienceRow {
   previewLeft: string
 }
 
+export interface ProcessStage {
+  n: string
+  title: string
+  body: string
+}
+
 export interface FaqItem {
   n: string
   q: string
@@ -221,6 +227,38 @@ export const site = {
         previewLeft: '68.85%',
       },
     ] satisfies ExperienceRow[],
+  },
+
+  /*
+   * How I Work. Copy supplied verbatim with the brief; the headline keeps
+   * its two-line arrangement, so the break is part of the data.
+   */
+  process: {
+    heading: ['A CLEAR PATH FROM', 'IDEA TO LAUNCH.'],
+    intro:
+      'I start by understanding what you want to build and who it’s for. Explore ideas, design how it looks and works, and bring it to life.',
+    stages: [
+      {
+        n: '01',
+        title: 'Understand the idea',
+        body: 'We talk about your goals, the problem you want to solve, and what a successful result would look like.',
+      },
+      {
+        n: '02',
+        title: 'Find the best approach',
+        body: 'I explore different ways to solve the problem and map out the steps people will take to get things done.',
+      },
+      {
+        n: '03',
+        title: 'Design and try it out',
+        body: 'I design the screens and create a working preview. People try it, and I use their feedback to make it clearer.',
+      },
+      {
+        n: '04',
+        title: 'Help bring it to life',
+        body: 'I work with developers to build the designs and make sure everything works as planned.',
+      },
+    ] satisfies ProcessStage[],
   },
 
   quote: {

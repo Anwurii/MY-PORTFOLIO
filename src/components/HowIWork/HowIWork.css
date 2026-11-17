@@ -1,0 +1,231 @@
+/* ------------------------------------------------------------------ *
+ * How I Work.
+ *
+ * The supplied desktop type spec, written against the 1512 design frame:
+ * each value below is exactly the stated number of CSS px at 1512 and
+ * shrinks with the rest of the page under it, like every other section.
+ *
+ * The tracking is the brief's, unadjusted. Note it is far tighter than the
+ * rest of the site, which sets body copy at -0.05em: -4px at 28px is
+ * -0.143em, and -3px at 30px is -0.1em.
+ * ------------------------------------------------------------------ */
+.hiw {
+  --hiw-head-fs: 54;
+  --hiw-head-ls: -3;
+  --hiw-head-lh: 64;
+
+  --hiw-intro-fs: 28;
+  --hiw-intro-ls: -4;
+  --hiw-intro-lh: 34;
+
+  --hiw-title-fs: 30;
+  --hiw-title-ls: -3;
+
+  --hiw-body-fs: 24;
+  --hiw-body-ls: -2;
+  --hiw-body-lh: 34;
+
+  /* not given in the brief — see the note in the handover */
+  --hiw-n-fs: 86;
+
+  position: relative;
+  padding-top: calc(60 * var(--u));
+  padding-bottom: calc(60 * var(--u));
+}
+
+.hiw__inner {
+  width: calc(1304 * var(--u));
+  margin-inline: auto;
+}
+
+/* ---- heading and opening paragraph ------------------------------- */
+
+.hiw__top {
+  display: grid;
+  grid-template-columns: calc(640 * var(--u)) 1fr;
+  column-gap: calc(64 * var(--u));
+  align-items: start;
+}
+
+.hiw__heading {
+  margin: 0;
+  font-size: calc(var(--hiw-head-fs) * var(--u));
+  line-height: calc(var(--hiw-head-lh) * var(--u));
+  letter-spacing: calc(var(--hiw-head-ls) * var(--u));
+  font-weight: 700;
+  color: var(--c-heading-gray);
+}
+.hiw__heading-line { display: block; }
+
+.hiw__intro {
+  margin: 0;
+  font-size: calc(var(--hiw-intro-fs) * var(--u));
+  line-height: calc(var(--hiw-intro-lh) * var(--u));
+  letter-spacing: calc(var(--hiw-intro-ls) * var(--u));
+  font-weight: 400;
+  color: var(--c-fg-muted);
+  max-width: calc(600 * var(--u));
+}
+
+/* ---- the stages -------------------------------------------------- */
+
+/*
+ * The open band the reference leaves between the opening lines and the
+ * first rule.
+ */
+.hiw__stages {
+  position: relative;
+  margin: calc(200 * var(--u)) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--c-rule);
+}
+
+/*
+ * The close-set vertical guides, drawn down the middle of the two columns
+ * so they are one pair rather than a border per cell.
+ */
+.hiw__stages::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: calc(7 * var(--u));
+  margin-left: calc(-3.5 * var(--u));
+  border-left: 1px solid var(--c-rule);
+  border-right: 1px solid var(--c-rule);
+  pointer-events: none;
+}
+
+.hiw__stage {
+  /* the lower rule each number drops onto */
+  border-bottom: 1px solid var(--c-rule);
+  padding: calc(56 * var(--u)) calc(44 * var(--u)) calc(26 * var(--u));
+}
+.hiw__stage:nth-child(odd)  { padding-left: 0; }
+.hiw__stage:nth-child(even) { padding-right: 0; padding-left: calc(44 * var(--u)); }
+
+.hiw__stage-group {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: calc(28 * var(--u));
+  align-items: end;
+}
+
+.hiw__n {
+  font-size: calc(var(--hiw-n-fs) * var(--u));
+  line-height: 0.78;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  color: var(--c-heading-gray);
+}
+
+.hiw__stage-title {
+  margin: 0 0 calc(10 * var(--u));
+  font-size: calc(var(--hiw-title-fs) * var(--u));
+  line-height: 1.12;
+  letter-spacing: calc(var(--hiw-title-ls) * var(--u));
+  font-weight: 700;
+  color: var(--c-fg);
+}
+
+.hiw__stage-body {
+  margin: 0;
+  font-size: calc(var(--hiw-body-fs) * var(--u));
+  line-height: calc(var(--hiw-body-lh) * var(--u));
+  letter-spacing: calc(var(--hiw-body-ls) * var(--u));
+  font-weight: 400;
+  color: var(--c-fg-muted);
+  max-width: calc(470 * var(--u));
+}
+
+/* ---- entrances ---------------------------------------------------- *
+ * Both are driven only by the `is-in` class Reveal toggles, and both are
+ * declared inside `no-preference` so reduced motion renders the settled
+ * state with nothing hidden and nothing clipped.
+ * ------------------------------------------------------------------ */
+
+/*
+ * A line travelling up from behind the lower edge of its own clip box. The
+ * box carries room below the baseline and takes it straight back with a
+ * matching negative margin, so descenders are clear of the clip edge once
+ * the line has settled and the layout is untouched.
+ */
+.hiw__rise {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
+}
+.hiw__rise-ink { display: block; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hiw__rise-ink {
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      transform 800ms var(--ease-out) var(--reveal-delay, 0ms),
+      opacity 800ms var(--ease-out) var(--reveal-delay, 0ms);
+  }
+  .hiw__rise.is-in .hiw__rise-ink {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* number, title and description emerge as one group */
+  .hiw__stage-group {
+    opacity: 0;
+    transform: scale(0.96);
+    transition:
+      opacity 600ms var(--ease-out) var(--reveal-delay, 0ms),
+      transform 600ms var(--ease-out) var(--reveal-delay, 0ms);
+  }
+  .hiw__stage.is-in .hiw__stage-group {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---- tablet ------------------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .hiw { padding-block: 48px; }
+  .hiw__inner { width: auto; margin-inline: 24px; }
+  .hiw__top { grid-template-columns: 1fr; row-gap: 20px; }
+  .hiw__heading { font-size: 38px; line-height: 44px; letter-spacing: -2px; }
+  .hiw__intro { font-size: 20px; line-height: 26px; letter-spacing: -1px; max-width: 46ch; }
+  .hiw__stages { margin-top: 72px; }
+  .hiw__stage { padding: 36px 24px 20px; }
+  .hiw__n { font-size: 60px; }
+  .hiw__stage-title { font-size: 22px; letter-spacing: -1px; }
+  .hiw__stage-body { font-size: 17px; line-height: 24px; letter-spacing: -0.4px; }
+}
+
+/* ---- phone: one column, 01 → 04 ---------------------------------- */
+
+@media (max-width: 759px) {
+  .hiw { padding-block: 40px; }
+  .hiw__inner { margin-inline: 20px; }
+  .hiw__heading { font-size: 30px; line-height: 35px; }
+  .hiw__intro { font-size: 17px; line-height: 23px; letter-spacing: -0.5px; }
+
+  .hiw__stages {
+    grid-template-columns: 1fr;
+    margin-top: 48px;
+  }
+  /* a single column has nothing to divide */
+  .hiw__stages::before { display: none; }
+
+  .hiw__stage,
+  .hiw__stage:nth-child(odd),
+  .hiw__stage:nth-child(even) {
+    padding: 28px 0 20px;
+  }
+  .hiw__stage-group { column-gap: 16px; }
+  .hiw__n { font-size: 44px; }
+  .hiw__stage-title { font-size: 20px; }
+  .hiw__stage-body { font-size: 16px; line-height: 23px; max-width: none; }
+}

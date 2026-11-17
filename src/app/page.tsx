@@ -3,6 +3,7 @@ import { Hero } from '../components/Hero/Hero'
 import { Ticker } from '../components/Ticker/Ticker'
 import { SelectedWork } from '../components/SelectedWork/SelectedWork'
 import { Experience } from '../components/Experience/Experience'
+import { HowIWork } from '../components/HowIWork/HowIWork'
 import { Quote } from '../components/Quote/Quote'
 import { Faq } from '../components/Faq/Faq'
 import { Closing } from '../components/Closing/Closing'
@@ -22,6 +23,7 @@ export default function HomePage() {
         <Ticker />
         <SelectedWork />
         <Experience />
+        <HowIWork />
         <Quote />
         <Faq />
         <Closing />
