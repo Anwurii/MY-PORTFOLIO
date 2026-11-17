@@ -69,6 +69,11 @@ export interface ProcessStage {
   body: string
 }
 
+export interface IntroShot {
+  src: string
+  alt: string
+}
+
 export interface FaqItem {
   n: string
   q: string
@@ -128,6 +133,25 @@ export const site = {
       'I care about how a product looks, how it works, and what happens when real people use it.',
     cta: 'PUT ME TO WORK',
     portraitAlt: 'Anwurii, a product designer, looking straight at the camera',
+  },
+
+  /*
+   * Opening intro.
+   *
+   * The headline is supplied; the beats are its own words, which is how the
+   * reference cuts them. The four photographs are the owner's own supplied
+   * assets, already black and white, shown full-bleed between the words.
+   */
+  intro: {
+    headline: 'Need money for my Porsche',
+    beats: ['NEED', 'MONEY', 'FOR', 'MY', 'PORSCHE'],
+    skip: 'Skip intro',
+    shots: [
+      { src: '/images/intro/porsche-garage.jpg', alt: '' },
+      { src: '/images/intro/porsche-road.jpg', alt: '' },
+      { src: '/images/intro/porsche-sea.jpg', alt: '' },
+      { src: '/images/intro/porsche-passenger.jpg', alt: '' },
+    ] satisfies IntroShot[],
   },
 
   ticker: ['PRODUCT THINKING', 'BUILDING', 'MOBILE DESIGN', 'WEBSITE DESIGN'],

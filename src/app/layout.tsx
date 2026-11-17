@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { site } from '../data/site'
 import { SITE_URL, buildJsonLd, hasRealDomain } from '../lib/seo'
 import { themeScript } from '../lib/theme'
+import { introScript } from '../lib/intro'
 import { InlineScript } from '../components/InlineScript'
 import { Cursor } from '../components/Cursor/Cursor'
 import './globals.css'
@@ -78,6 +79,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" dir="ltr" data-theme="dark" suppressHydrationWarning>
       <head>
         <InlineScript html={themeScript} />
+        {/* Decides the intro before the hero has painted a frame. The
+            replay flag is development-only. */}
+        <InlineScript html={introScript(process.env.NODE_ENV !== 'production')} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd()) }}

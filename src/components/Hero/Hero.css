@@ -300,3 +300,22 @@
 
   .u-btn { width: auto; min-width: 180px; height: 48px; padding-inline: 22px; font-size: 14px; }
 }
+
+/* ------------------------------------------------------------------ *
+ * Held for the opening intro.
+ *
+ * The entrance is a CSS animation, so it would otherwise run its whole
+ * course behind the overlay and be over before the visitor saw the hero.
+ * `intro-active` is set on <html> before first paint and removed when the
+ * intro starts opening, so the animations are paused at frame one and run
+ * from the beginning at exactly the right moment. Pausing keeps every
+ * `animation-delay` intact, which re-triggering would not.
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  .intro-active .hero__ink,
+  .intro-active .hero__in--left,
+  .intro-active .hero__in--right,
+  .intro-active .hero__in--fade {
+    animation-play-state: paused;
+  }
+}

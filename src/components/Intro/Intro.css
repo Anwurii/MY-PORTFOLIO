@@ -1,80 +1,164 @@
-/* Scroll is locked only while the intro is on screen; finish() removes this. */
-.intro-locked body { overflow: hidden; }
+/* ------------------------------------------------------------------ *
+ * Opening intro.
+ *
+ * Measured from the supplied screen recording: full-bleed cuts alternating
+ * words and photographs, then the frame squeezes shut from both edges to
+ * the centre, a beat of black, and the same frame opens again onto the
+ * homepage.
+ *
+ * The black ground is the two shutter panels, not this element, so the
+ * exit can simply part them and uncover the page. The stage sits above
+ * them, which is why the cuts read full-bleed while the panels are closed.
+ * ------------------------------------------------------------------ */
+
+/*
+ * Set on <html> before first paint. It locks the page and holds the hero's
+ * entrance at its first frame — see the pause rule in Hero.css.
+ */
+.intro-active body { overflow: hidden; }
 
 .intro {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  display: grid;
-  place-items: center;
-  background: #000000;
-  /* the wipe out */
-  transition: opacity var(--exit-ms, 340ms) cubic-bezier(0.4, 0, 0.2, 1),
-              clip-path var(--exit-ms, 340ms) cubic-bezier(0.4, 0, 0.2, 1);
-  clip-path: inset(0 0 0 0);
-}
-.intro.is-leaving {
-  opacity: 0;
-  clip-path: inset(0 0 100% 0);
+  background: transparent;
 }
 
-/* The beats stack in one grid cell so nothing shifts between words. */
-.intro__word {
-  display: grid;
-  margin: 0;
-  place-items: center;
-  text-align: center;
-  padding-inline: 20px;
+/* ---- the black ground, and the exit ------------------------------- */
+
+.intro__shutter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%;          /* the overlap hides a seam on fractional heights */
+  background: #000000;
+  z-index: 0;
 }
+.intro__shutter--top { top: 0; }
+.intro__shutter--bottom { bottom: 0; }
+
+.intro.is-open .intro__shutter {
+  transition: transform var(--open-ms, 480ms) cubic-bezier(0.76, 0, 0.24, 1);
+}
+.intro.is-open .intro__shutter--top { transform: translateY(-100%); }
+.intro.is-open .intro__shutter--bottom { transform: translateY(100%); }
+
+/* ---- the cuts ------------------------------------------------------ */
+
+.intro__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  clip-path: inset(0 0 0 0);
+}
+
 /*
- * The beats share one grid cell so nothing shifts between words. The word
- * leaving has no transition, so it clears the instant the next one starts —
- * cross-fading them overlaps two centred words into an unreadable jumble.
+ * The squeeze. One transition on clip-path, running underneath the flicker
+ * for its whole length, closing on the centre line.
  */
-.intro__beat {
+.intro.is-squeeze .intro__stage {
+  clip-path: inset(50% 0 50% 0);
+  transition: clip-path var(--squeeze-ms, 1200ms) linear;
+}
+
+/* Once the frame is opening there is nothing left to show. */
+.intro.is-open .intro__stage { opacity: 0; }
+
+/*
+ * The moment the frame starts opening the page underneath is live again, so
+ * the overlay must stop taking the pointer even though it is still on screen
+ * for the length of the transition.
+ */
+.intro.is-open { pointer-events: none; }
+/* and nothing of the intro's own furniture is left over the page */
+.intro.is-open .intro__skip { opacity: 0; }
+
+/*
+ * Cuts, not cross-fades: the outgoing frame clears in the same frame the
+ * next one arrives, which is what makes the montage read as film splices.
+ */
+.intro__shot,
+.intro__word {
   grid-area: 1 / 1;
-  font-family: var(--font-sans);
-  font-size: clamp(2rem, 7vw, 6rem);
-  line-height: 1;
-  letter-spacing: -0.045em;
-  font-weight: 500;
-  color: #6f6f6f;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(14px);
-  transition: none;
 }
-.intro__beat.is-on {
+.intro__shot.is-on,
+.intro__word.is-on {
   opacity: 1;
   visibility: visible;
-  transform: none;
-  transition: opacity 220ms ease-out, transform 220ms ease-out;
 }
-.intro__beat--name { color: #ffffff; }
+
+.intro__shot {
+  position: absolute;
+  inset: 0;
+}
+.intro__shot img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.intro__word {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding-inline: 20px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 100px;
+  line-height: 1;
+  letter-spacing: -2px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/*
+ * The recording flips colour on roughly every third cut during the
+ * flicker. In black and white that is white ground, black type.
+ */
+.intro.is-inverted .intro__stage { background: #ffffff; }
+.intro.is-inverted .intro__word { color: #000000; }
+
+/* ---- skip ---------------------------------------------------------- */
 
 .intro__skip {
   position: absolute;
-  right: 24px;
-  bottom: 24px;
-  min-height: 44px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  background: transparent;
-  color: #aca8a8;
+  right: 20px;
+  bottom: 18px;
+  z-index: 2;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
   font-family: var(--font-sans);
   font-size: 13px;
-  letter-spacing: 0.04em;
-  transition: color 160ms ease-out, border-color 160ms ease-out;
+  letter-spacing: 0.02em;
+  cursor: pointer;
 }
-.intro__skip:hover,
-.intro__skip:focus-visible { color: #ffffff; border-color: rgba(255, 255, 255, 0.7); }
+.intro__skip:hover { background: rgba(255, 255, 255, 0.26); }
+.intro__skip:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* ---- smaller screens ----------------------------------------------- */
+
+@media (max-width: 1023px) {
+  .intro__word { font-size: 64px; letter-spacing: -1.4px; }
+}
+@media (max-width: 759px) {
+  .intro__word { font-size: 40px; letter-spacing: -1px; }
+  .intro__skip { right: 14px; bottom: 14px; }
+}
 
 /*
- * Belt and braces: if the page is restored from bfcache or the component is
- * ever torn down mid-flight, nothing here can leave the document hidden.
+ * Reduced motion never reaches this component — the inline script and the
+ * gate both refuse — but if it is ever rendered anyway, nothing moves.
  */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
-  .intro-locked body { overflow: visible; }
 }
