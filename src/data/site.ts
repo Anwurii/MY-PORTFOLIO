@@ -355,10 +355,10 @@ export const site = {
     lines: ['I DESIGN & BUILD', 'PRODUCTS THAT'],
     rotating: ['HELP', 'CONVERT', 'SIMPLIFY', 'SHIP'],
     labels: [
-      { text: 'Senior Product Designer', tone: 'cyan',   corner: 'bl', arrow: 'bl', x: 31.6,  y: -16, mx: 10, my: 8 },
-      { text: 'I ship designs',          tone: 'green',  corner: 'tl', arrow: 'bl', x: 96,    y: 33,  mx: -9, my: 11 },
-      { text: 'built for people',        tone: 'purple', corner: 'tr', arrow: 'tr', x: -18,   y: 50,  mx: 11, my: -8 },
-      { text: 'ideas into action',       tone: 'orange', corner: 'tl', arrow: 'tl', x: 78,    y: 104, mx: -10, my: -9 },
+      { text: 'Senior Product Designer', tone: 'cyan',   corner: 'bl', arrow: 'bl', x: 29.6,  y: -19, mx: 10, my: 8 },
+      { text: 'I ship designs',          tone: 'green',  corner: 'tl', arrow: 'bl', x: 80.7,  y: 31,  mx: -9, my: 11 },
+      { text: 'built for people',        tone: 'purple', corner: 'tr', arrow: 'tr', x: -18.7, y: 52.6,  mx: 11, my: -8 },
+      { text: 'ideas into action',       tone: 'orange', corner: 'tl', arrow: 'tl', x: 82.6,  y: 111, mx: -10, my: -9 },
     ],
   },
 

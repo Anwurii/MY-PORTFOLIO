@@ -7,8 +7,13 @@ import './Statement.css'
 
 const { statement } = site
 const ROTATING = statement.rotating
-/** The hold; the 500ms swap itself is the transition in Statement.css. */
-const HOLD_MS = 1800
+/**
+ * One word every three seconds, measured off the recording: the band's ink
+ * settles about 2.1s and the swap itself takes roughly 0.9s, with the
+ * outgoing word leaving upward before the incoming one arrives from below.
+ * The durations and the entering word's delay are in Statement.css.
+ */
+const HOLD_MS = 3000
 
 /** The sentence as it reads when it is standing still. */
 const FULL_TEXT = `${statement.lines.join(' ')} ${ROTATING[0]}`
@@ -43,35 +48,46 @@ export function Statement() {
     if (!section || !head) return
 
     /*
-     * The headline size is a fixed value in the stylesheet now, so the only
-     * thing left to solve is the rotating frame — and it is solved from the
-     * size and tracking the headline actually ended up with, read back off
-     * the element rather than assumed, so it stays right at every
-     * breakpoint and after the real face resolves.
+     * Both the headline size and the rotating frame are solved from the
+     * real rendered face, and re-solved once the fonts resolve and on
+     * resize.
+     *
+     * The headline target is measured off the recording: its longest line
+     * spans about 60% of the browser's content width, which is what gives
+     * the section its weight. Solving for that rather than fixing a pixel
+     * size is what keeps it right at any viewport, and the reference's own
+     * face is a serif, so copying its pixel size would not have carried
+     * over to Helvetica Neue anyway.
      */
     const measure = () => {
       const styles = getComputedStyle(head)
-      const size = parseFloat(styles.fontSize)
-      const tracking = parseFloat(styles.letterSpacing) || 0
-      if (!size) return
+      const tracking = -0.035 // em; matches the stylesheet
 
       const ctx = document.createElement('canvas').getContext('2d')
       if (!ctx) return
-      ctx.font = `${styles.fontWeight} ${size}px ${styles.fontFamily}`
-      ctx.letterSpacing = `${tracking}px`
+      const probe = 200
+      ctx.font = `700 ${probe}px ${styles.fontFamily}`
+      ctx.letterSpacing = `${tracking * probe}px`
 
-      const inkWidth = (text: string) => {
+      const emWidth = (text: string) => {
         const m = ctx.measureText(text)
-        return m.actualBoundingBoxLeft + m.actualBoundingBoxRight
+        return (m.actualBoundingBoxLeft + m.actualBoundingBoxRight) / probe
       }
+
+      const padding = 2 * parseFloat(styles.paddingLeft || '0')
+      const room = section.clientWidth - 2 * parseFloat(getComputedStyle(section).paddingLeft)
+      const target = Math.min(section.clientWidth * 0.6, room)
+      const longest = statement.lines.reduce((a, b) => (emWidth(b) > emWidth(a) ? b : a))
+      const size = (target - padding) / emWidth(longest)
+      section.style.setProperty('--head-size', `${size.toFixed(2)}px`)
 
       /*
        * The widest alternate sets the frame. Canvas metrics and the DOM's
        * own layout disagree by a pixel or two, so round up and add a hair
        * of slack rather than leave the widest word fractionally over.
        */
-      const widest = ROTATING.reduce((a, b) => (inkWidth(b) > inkWidth(a) ? b : a))
-      section.style.setProperty('--rot-width', `${Math.ceil(inkWidth(widest)) + 3}px`)
+      const widest = ROTATING.reduce((a, b) => (emWidth(b) > emWidth(a) ? b : a))
+      section.style.setProperty('--rot-width', `${Math.ceil(emWidth(widest) * size) + 4}px`)
     }
 
     measure()

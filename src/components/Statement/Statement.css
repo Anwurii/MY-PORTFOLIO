@@ -5,10 +5,10 @@
  * reference: #111113 under a 21.6px dot grid, pills with 40px radii bar one
  * square corner, each floating no more than a few pixels.
  *
- * The headline is a fixed 84px/-3 at the 1512 frame, stepping down at the
- * two breakpoints. The rotating frame's width is solved in the component
- * from whichever size and tracking the headline actually ended up with, and
- * written here as --rot-width; the fallback only covers the first paint.
+ * The headline size and the rotating frame are both solved in the
+ * component from the real rendered face — the headline to ~60% of the
+ * section, as the recording has it — and written here as --head-size and
+ * --rot-width; the fallbacks only cover the first paint.
  * ------------------------------------------------------------------ */
 .statement {
   position: relative;
@@ -62,9 +62,9 @@
   z-index: 2;
   margin: 0;
   text-align: center;
-  font-size: calc(84 * var(--u));
-  line-height: 1.06;
-  letter-spacing: calc(-3 * var(--u));
+  font-size: var(--head-size, 7vw);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   font-weight: 700;
   color: var(--c-fg);
   pointer-events: none;      /* the labels own the pointer, not the type */
@@ -88,7 +88,7 @@
   display: inline-block;
   vertical-align: top;
   width: var(--rot-width, 6em);
-  height: 1.06em;
+  height: 1.02em;
   clip-path: inset(0 -0.6em);
 }
 
@@ -114,8 +114,15 @@
   visibility: visible;
 }
 
+/*
+ * The swap, timed off the recording: the outgoing word leaves first and the
+ * incoming one follows a beat later, which is what produces the short gap
+ * where neither is centred rather than a straight cross-fade.
+ */
 @media (prefers-reduced-motion: no-preference) {
-  .statement__word { transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1); }
+  .statement__word { transition: transform 360ms cubic-bezier(0.33, 0, 0.2, 1); }
+  .statement__word.is-on { transition-delay: 170ms; }
+  .statement__word.is-out { transition-delay: 0ms; }
 }
 
 /* Reduced motion: the first word only, standing still. */
@@ -247,8 +254,6 @@
     padding: 80px 24px;
     background-size: 18px 18px;
   }
-  /* the fixed 84px is a desktop value; below that it steps down */
-  .statement__text { font-size: 56px; letter-spacing: -2px; }
   .statement__pill { font-size: 13px; padding: 9px 15px; border-radius: 30px; }
   .statement__arrow { width: 20px; height: 22px; }
   .is-arrow-bl .statement__arrow { left: -7px; bottom: -13px; }
@@ -265,7 +270,6 @@
     padding: 64px 18px;
     background-size: 15px 15px;
   }
-  .statement__text { font-size: 34px; letter-spacing: -1.2px; }
   .statement__pill { font-size: 10.5px; padding: 6px 11px; border-radius: 22px; }
   .statement__arrow { width: 15px; height: 17px; }
   .is-arrow-bl .statement__arrow { left: -5px; bottom: -10px; }
@@ -276,8 +280,13 @@
    * Pulled out to the corners of the headline box so four labels and three
    * lines of type can share a narrow column without touching.
    */
-  .statement__label:nth-child(1) { left: 0%;   top: -44%; }
-  .statement__label:nth-child(2) { left: 40%;  top: -16%; }
+  /*
+   * A label is 28% of the headline box's height here, so stacked pairs need
+   * better than that between them or they touch. Two sit above the type and
+   * two below, each pair a clear 10% apart.
+   */
+  .statement__label:nth-child(1) { left: 0%;   top: -78%; }
+  .statement__label:nth-child(2) { left: 24%;  top: -40%; }
   .statement__label:nth-child(3) { left: -2%;  top: 108%; }
-  .statement__label:nth-child(4) { left: 44%;  top: 126%; }
+  .statement__label:nth-child(4) { left: 24%;  top: 146%; }
 }
